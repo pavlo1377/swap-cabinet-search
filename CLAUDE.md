@@ -7,6 +7,11 @@ rules) live in AGENTS.md and are imported here — follow them:
 
 @AGENTS.md
 
+Team git workflow (branch from `dev`, PRs target `dev`, never push to `main`/`dev` directly) —
+follow it:
+
+@GIT_WORKFLOW.md
+
 ## Commands
 
 Yarn is the package manager (`yarn.lock`). Node `^22.22.0 || >=24`.

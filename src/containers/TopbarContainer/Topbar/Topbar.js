@@ -25,6 +25,7 @@ import SearchIcon from './SearchIcon';
 import TopbarSearchForm from './TopbarSearchForm/TopbarSearchForm';
 import TopbarMobileMenu from './TopbarMobileMenu/TopbarMobileMenu';
 import TopbarDesktop from './TopbarDesktop/TopbarDesktop';
+import AISearchButton from './AISearchButton/AISearchButton';
 
 import css from './Topbar.module.css';
 import { getCurrentUserTypeRoles, showCreateListingLinkForUser } from '../../../util/userHelpers';
@@ -347,6 +348,8 @@ const TopbarComponent = props => {
         <FormattedMessage id="Topbar.skipToMainContent" />
         <IconArrowHead direction="right" size="small" rootClassName={css.skiptoMainArrow} />
       </Button>
+      {/* Floating button on every page, except on the AI search page itself */}
+      {resolvedCurrentPage !== 'AISearchPage' ? <AISearchButton /> : null}
       <LimitedAccessBanner
         isAuthenticated={isAuthenticated}
         isLoggedInAs={isLoggedInAs}

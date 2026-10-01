@@ -151,3 +151,11 @@ export const createUserWithIdp = body => {
 export const deleteUserAccount = body => {
   return post('/api/delete-account', body);
 };
+
+// AI search: Claude picks the listings that match the text.
+//
+// See `server/api/ai-search.js` for the request body ({ text }) and the
+// response ({ listingIds }).
+export const aiSearch = body => {
+  return post('/api/ai-search', body);
+};

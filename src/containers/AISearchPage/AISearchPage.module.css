@@ -1,0 +1,137 @@
+@import '../../styles/customMediaQueries.css';
+
+.root {
+  /* Expand to the available space */
+  flex-grow: 1;
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 36px 24px 72px 24px;
+
+  @media (--viewportMedium) {
+    padding: 64px 48px 96px 48px;
+  }
+}
+
+/* Heading, description and the search form */
+.hero {
+  max-width: 720px;
+  margin: 0 auto 48px auto;
+  text-align: center;
+
+  @media (--viewportMedium) {
+    margin-bottom: 64px;
+  }
+}
+
+.heading {
+  composes: marketplaceModalTitleStyles from global;
+  margin: 0;
+}
+
+.description {
+  color: var(--colorGrey700);
+  margin: 12px 0 0 0;
+
+  @media (--viewportMedium) {
+    margin-top: 16px;
+  }
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 24px;
+
+  @media (--viewportMedium) {
+    flex-direction: row;
+    gap: 8px;
+    margin-top: 32px;
+  }
+}
+
+.input {
+  flex-grow: 1;
+  height: 48px;
+  padding: 0 18px;
+  border: 1px solid var(--colorGrey200);
+  border-radius: 24px;
+  background-color: var(--colorWhite);
+  box-shadow: var(--boxShadowLight);
+
+  &:hover,
+  &:focus {
+    border-color: var(--marketplaceColor);
+    outline: none;
+  }
+
+  @media (--viewportMedium) {
+    height: 56px;
+    padding: 0 24px;
+    border-radius: 28px;
+  }
+}
+
+.submit {
+  min-height: 48px;
+  border-radius: 24px;
+
+  @media (--viewportMedium) {
+    width: 160px;
+    min-height: 56px;
+    border-radius: 28px;
+  }
+}
+
+.message {
+  text-align: center;
+  color: var(--colorGrey700);
+}
+
+.error {
+  text-align: center;
+  color: var(--colorFail);
+}
+
+.resultsCount {
+  composes: textSmall from global;
+  color: var(--colorGrey700);
+  margin: 0 0 18px 0;
+
+  @media (--viewportMedium) {
+    margin-bottom: 24px;
+  }
+}
+
+/* Same grid as the SearchPage grid */
+.listingCards {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 24px;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+
+  @media (min-width: 550px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (--viewportLarge) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @media (min-width: 1440px) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.resultItem {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.listingCard {
+  width: 100%;
+}

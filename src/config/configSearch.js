@@ -13,7 +13,7 @@
 // Note: The mainSearch comes from the listing-search asset nowadays by default.
 //       To use this built-in configuration, you need to remove the overwrite from configHelper.js (mergeSearchConfig func)
 export const mainSearch = {
-  searchType: 'location',
+  searchType: 'keywords', // 'keywords' or 'location'
 };
 
 /**

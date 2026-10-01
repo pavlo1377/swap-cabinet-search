@@ -66,6 +66,7 @@ export class SearchPageComponent extends Component {
     this.applyFilters = this.applyFilters.bind(this);
     this.cancelFilters = this.cancelFilters.bind(this);
     this.resetAll = this.resetAll.bind(this);
+    this.closeMap = this.closeMap.bind(this);
     this.getHandleChangedValueFn = this.getHandleChangedValueFn.bind(this);
 
     // SortBy
@@ -172,6 +173,18 @@ export class SearchPageComponent extends Component {
       urlQueryParams: validUrlQueryParamsFromProps(this.props),
       setState: this.setState.bind(this),
     });
+  }
+
+  // Close the map: remove the location (address, bounds, origin) from the URL and keep the filters.
+  // Without a location, the search page shows the grid instead (see routeConfiguration.js).
+  closeMap() {
+    const { history, routeConfiguration, location } = this.props;
+    const { address, bounds, origin, mapSearch, page, ...otherParams } = parse(location.search);
+    const { routeName, pathParams } = getSearchPageResourceLocatorStringParams(
+      routeConfiguration,
+      location
+    );
+    history.push(createResourceLocatorString(routeName, routeConfiguration, pathParams, otherParams));
   }
 
   getHandleChangedValueFn(useHistoryPush) {
@@ -466,6 +479,13 @@ export class SearchPageComponent extends Component {
               </div>
             )}
           </div>
+          {/* When Console sets the map layout, the map is always shown, so there's nothing to close */}
+          {config.layout?.searchPage?.variantType !== 'map' ? (
+            <button type="button" className={css.closeMapButton} onClick={this.closeMap}>
+              <span aria-hidden="true">✕</span>
+              {intl.formatMessage({ id: 'SearchPage.closeMap' })}
+            </button>
+          ) : null}
           <ModalInMobile
             className={css.mapPanel}
             id="SearchPage_map"

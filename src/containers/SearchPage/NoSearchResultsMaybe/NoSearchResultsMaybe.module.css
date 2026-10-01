@@ -14,6 +14,35 @@
   }
 }
 
+.aiSearchLink {
+  composes: h5 from global;
+  font-weight: var(--fontWeightBold);
+  color: var(--colorWhite);
+  background: linear-gradient(135deg, var(--marketplaceColor), var(--marketplaceColorDark));
+
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 42px;
+  padding: 0 24px;
+  margin: 12px 0;
+  border-radius: 21px;
+  transition: transform var(--transitionStyleButton);
+
+  &:hover,
+  &:focus {
+    color: var(--colorWhite);
+    text-decoration: none;
+    transform: translateY(-1px);
+  }
+
+  @media (--viewportMedium) {
+    height: 48px;
+    margin: 16px 0;
+    border-radius: 24px;
+  }
+}
+
 .createListingLink,
 .resetAllFiltersButton {
   composes: h5 from global;

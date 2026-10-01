@@ -64,11 +64,20 @@ const RedirectToLandingPage = () => <NamedRedirect name="LandingPage" />;
 // with /api and if you encounter clashing routes see server/index.js if there's
 // a conflicting route defined there.
 
+// A location search (e.g. from the landing page hero: /s?address=...&bounds=...) shows the results
+// on a map. Other searches (keywords, filters) use the grid.
+const SearchPageGridOrMap = props => {
+  const urlParams = new URLSearchParams(props.location?.search);
+  const isLocationSearch = urlParams.has('address') || urlParams.has('bounds');
+  return isLocationSearch ? <SearchPageWithMap {...props} /> : <SearchPageWithGrid {...props} />;
+};
+
 // Our routes are exact by default.
 // See behaviour from Routes.js where Route is created.
 const routeConfiguration = (layoutConfig, accessControlConfig) => {
+  // Console → Layout → Search page: 'map' always shows the map, 'grid' shows it only for location search
   const isSearchPageWithMap = layoutConfig.searchPage?.variantType === 'map';
-  const SearchPage = isSearchPageWithMap ? SearchPageWithMap : SearchPageWithGrid;
+  const SearchPage = isSearchPageWithMap ? SearchPageWithMap : SearchPageGridOrMap;
   const ListingPage = layoutConfig.listingPage?.variantType === 'carousel' 
     ? ListingPageCarousel 
     : ListingPageCoverPhoto;
@@ -98,7 +107,8 @@ const routeConfiguration = (layoutConfig, accessControlConfig) => {
       component: SearchPage,
       loadData: pageDataLoadingAPI.SearchPage.loadData,
       prioritizeLibraryLoading: {
-        map: isSearchPageWithMap,
+        // A location search can show the map with either variant, so load the map library early
+        map: true,
       },
     },
     {
@@ -108,7 +118,7 @@ const routeConfiguration = (layoutConfig, accessControlConfig) => {
       component: SearchPage,
       loadData: pageDataLoadingAPI.SearchPage.loadData,
       prioritizeLibraryLoading: {
-        map: isSearchPageWithMap,
+        map: true,
       },
     },
     // Results are loaded only after the shopper submits the search, so no loadData here

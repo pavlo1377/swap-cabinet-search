@@ -147,7 +147,7 @@ const TopbarSearchForm = props => {
     if (isMainSearchTypeKeywords(appConfig)) {
       const parsedSearch = parseNaturalSearch(values.keywords);
       console.log('Natural search:', parsedSearch);
-      onSubmit({ keywords: parsedSearch.keywords, maxPrice: parsedSearch.maxPrice, categoryKeyword: parsedSearch.categoryKeyword, kids: parsedSearch.kids, categoryLevel1: parsedSearch.categoryLevel1, categoryLevel2: parsedSearch.categoryLevel2 });
+      onSubmit({ keywords: parsedSearch.keywords, price: parsedSearch.maxPrice != null ? "0," + parsedSearch.maxPrice : undefined, categoryLevel1: parsedSearch.categoryLevel1, categoryLevel2: parsedSearch.categoryLevel2 });
       // blur search input to hide software keyboard
       searchInpuRef?.current?.blur();
     }

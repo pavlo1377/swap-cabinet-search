@@ -5,9 +5,9 @@ export const parseNaturalSearch = query => {
     keywords: query,
   };
 
-  // Price: "under â‚¬10", "under 10", "less than â‚¬10", etc.
+  // Price: under €10, below 10, less than €10, etc.
   const priceMatch = text.match(
-    /(?:under|below|less than|max(?:imum)?(?: price)?(?: of)?)\s*â‚¬?\s*(\d+(?:[.,]\d+)?)/
+    /(?:under|below|less than|max(?:imum)?(?: price)?(?: of)?)\s*€?\s*(\d+(?:[.,]\d+)?)/
   );
 
   if (priceMatch) {
@@ -19,39 +19,48 @@ export const parseNaturalSearch = query => {
     result.kids = true;
   }
 
-  // Common product/category words
-  const categoryWords = [
-    'shoes',
-    'shoe',
-    'boots',
-    'dress',
-    'dresses',
-    'jacket',
-    'jackets',
-    'shirt',
-    'shirts',
-    'pants',
-    'jeans',
-    'sweater',
-    'sweaters',
-    'bag',
-    'bags',
+  // Product categories
+  const categoryMap = [
+    { words: ['shoes', 'shoe'], keyword: 'shoes' },
+    { words: ['boots', 'boot'], keyword: 'boots' },
+    { words: ['dresses', 'dress'], keyword: 'dress' },
+    { words: ['jackets', 'jacket'], keyword: 'jacket' },
+    { words: ['shirts', 'shirt'], keyword: 'shirt' },
+    { words: ['pants'], keyword: 'pants' },
+    { words: ['jeans'], keyword: 'jeans' },
+    { words: ['sweaters', 'sweater'], keyword: 'sweater' },
+    { words: ['bags', 'bag'], keyword: 'bag' },
   ];
 
-  const category = categoryWords.find(word => text.includes(word));
+  const matchedCategory = categoryMap.find(({ words }) =>
+    words.some(word => text.includes(word))
+  );
 
-  if (category) {
-    result.categoryKeyword = category;
-    if (result.kids && (category === 'shoes' || category === 'shoe')) {
+  if (matchedCategory) {
+    result.categoryKeyword = matchedCategory.keyword;
+
+    // Real category tree from the app:
+    // Kids -> Shoes = kids / kids-shoes
+    if (result.kids && matchedCategory.keyword === 'shoes') {
       result.categoryLevel1 = 'kids';
       result.categoryLevel2 = 'kids-shoes';
     }
   }
 
+  // Keep only useful search keywords.
   const keywordParts = [];
-  if (category) keywordParts.push(category);
-  if (result.kids) keywordParts.push('kids');
-  result.keywords = keywordParts.length > 0 ? keywordParts.join(' ') : query;
+
+  if (result.categoryKeyword) {
+    keywordParts.push(result.categoryKeyword);
+  }
+
+  if (result.kids) {
+    keywordParts.push('kids');
+  }
+
+  result.keywords = keywordParts.length > 0
+    ? keywordParts.join(' ')
+    : query;
 
   return result;
 };

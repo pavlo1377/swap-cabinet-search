@@ -88,7 +88,7 @@ const searchListingsPayloadCreator = ({ searchParams, config }, thunkAPI) => {
    */
   const prepareCategoryParams = (paramName, params) => {
     const categoryConfig = config.search.defaultFilters?.find(f => f.schemaType === 'category');
-    const categories = config.categoryConfiguration.categories;
+    const categories = config.categoryConfiguration.categories; console.log('REAL CATEGORY TREE:', JSON.stringify(categories)); console.log('REAL CATEGORY TREE:', JSON.stringify(categories)); window.__REAL_CATEGORIES__ = categories; console.log('REAL CATEGORY TREE:', categories);
     const { key, scope } = categoryConfig || {};
     const categoryParamPrefix = constructQueryParamName(key, scope);
     return paramName.startsWith(categoryParamPrefix)

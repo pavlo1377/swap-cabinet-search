@@ -77,3 +77,22 @@
     opacity: 0;
   }
 }
+
+
+/* Match the primary Search button */
+.root,
+.root:link,
+.root:visited {
+  color: var(--colorWhite);
+  background: var(--marketplaceColor);
+  background-image: none;
+  text-decoration: none;
+}
+
+.root:hover,
+.root:focus,
+.root:active {
+  color: var(--colorWhite);
+  background: var(--marketplaceColorDark);
+  background-image: none;
+}

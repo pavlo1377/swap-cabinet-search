@@ -12,6 +12,7 @@ import { NamedRedirect } from '../components';
 
 const pageDataLoadingAPI = getPageDataLoadingAPI();
 
+const AISearchPage = loadable(() => import(/* webpackChunkName: "AISearchPage" */ '../containers/AISearchPage/AISearchPage'));
 const AuthenticationPage = loadable(() => import(/* webpackChunkName: "AuthenticationPage" */ '../containers/AuthenticationPage/AuthenticationPage'));
 const CheckoutPage = loadable(() => import(/* webpackChunkName: "CheckoutPage" */ '../containers/CheckoutPage/CheckoutPage'));
 const CMSPage = loadable(() => import(/* webpackChunkName: "CMSPage" */ '../containers/CMSPage/CMSPage'));
@@ -109,6 +110,13 @@ const routeConfiguration = (layoutConfig, accessControlConfig) => {
       prioritizeLibraryLoading: {
         map: isSearchPageWithMap,
       },
+    },
+    // Results are loaded only after the shopper submits the search, so no loadData here
+    {
+      path: '/ai-search',
+      name: 'AISearchPage',
+      ...authForPrivateMarketplace,
+      component: AISearchPage,
     },
     {
       path: '/l',

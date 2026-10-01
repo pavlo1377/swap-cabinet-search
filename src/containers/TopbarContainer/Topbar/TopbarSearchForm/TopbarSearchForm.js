@@ -5,6 +5,7 @@ import classNames from 'classnames';
 
 import { useIntl } from '../../../../util/reactIntl';
 import { isMainSearchTypeKeywords } from '../../../../util/search';
+import { parseNaturalSearch } from '../../../../util/parseNaturalSearch';
 
 import { Form, KeywordAutocompleteInput, LocationAutocompleteInput } from '../../../../components';
 
@@ -144,7 +145,9 @@ const TopbarSearchForm = props => {
 
   const onKeywordSubmit = values => {
     if (isMainSearchTypeKeywords(appConfig)) {
-      onSubmit({ keywords: values.keywords });
+      const parsedSearch = parseNaturalSearch(values.keywords);
+      console.log('Natural search:', parsedSearch);
+      onSubmit({ keywords: parsedSearch.keywords, maxPrice: parsedSearch.maxPrice, categoryKeyword: parsedSearch.categoryKeyword, kids: parsedSearch.kids, categoryLevel1: parsedSearch.categoryLevel1, categoryLevel2: parsedSearch.categoryLevel2 });
       // blur search input to hide software keyboard
       searchInpuRef?.current?.blur();
     }

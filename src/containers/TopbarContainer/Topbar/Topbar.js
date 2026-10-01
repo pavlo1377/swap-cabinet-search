@@ -170,7 +170,7 @@ const TopbarComponent = props => {
         // sdk.listings.query, which then returns only that listing.
         // Plain typed text (no suggestion picked) adds nothing, so the search works as before.
         const selectedListingIdParam = selectedListingId ? { ids: selectedListingId } : {};
-        return { keywords: values?.keywords, ...selectedListingIdParam };
+        return { keywords: values?.keywords, price: values?.maxPrice != null ? "0," + values.maxPrice : undefined, categoryKeyword: values?.categoryKeyword, kids: values?.kids, categoryLevel1: values?.categoryLevel1, categoryLevel2: values?.categoryLevel2, ...selectedListingIdParam };
       }
       // topbar search defaults to 'location' search
       const { search, selectedPlace } = values?.location || {};

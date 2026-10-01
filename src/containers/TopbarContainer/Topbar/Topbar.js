@@ -161,9 +161,16 @@ const TopbarComponent = props => {
   const handleSubmit = values => {
     const { currentSearchParams, history, location, config, routeConfiguration } = props;
 
+    // Set when a listing is picked from the keyword search suggestions
+    const selectedListingId = values?.ids;
+
     const topbarSearchParams = () => {
       if (isMainSearchTypeKeywords(config)) {
-        return { keywords: values?.keywords };
+        // A picked suggestion adds ?ids=<listingId> to the URL. SearchPage passes it on to
+        // sdk.listings.query, which then returns only that listing.
+        // Plain typed text (no suggestion picked) adds nothing, so the search works as before.
+        const selectedListingIdParam = selectedListingId ? { ids: selectedListingId } : {};
+        return { keywords: values?.keywords, ...selectedListingIdParam };
       }
       // topbar search defaults to 'location' search
       const { search, selectedPlace } = values?.location || {};
@@ -176,10 +183,13 @@ const TopbarComponent = props => {
         bounds,
       };
     };
-    const searchParams = {
-      ...currentSearchParams,
-      ...topbarSearchParams(),
-    };
+    // Drop the current filters for a picked listing, so that they can't hide it from the results
+    const searchParams = selectedListingId
+      ? topbarSearchParams()
+      : {
+          ...currentSearchParams,
+          ...topbarSearchParams(),
+        };
 
     const { routeName, pathParams } = getSearchPageResourceLocatorStringParams(
       routeConfiguration,

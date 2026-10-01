@@ -1,8 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
 
+import { FormattedMessage } from '../../util/reactIntl';
+
 // Reuse the location autocomplete dropdown styles so both searches look the same
 import css from '../LocationAutocompleteInput/LocationAutocompleteInput.module.css';
+import keywordCss from './KeywordAutocompleteInput.module.css';
 
 const DEBOUNCE_WAIT_TIME = 300;
 const MIN_QUERY_LENGTH = 2;
@@ -18,6 +21,8 @@ const KEY_CODE_ESC = 27;
  * Works like LocationAutocompleteInput, but the predictions come from the given
  * getSuggestions function (e.g. listing titles) instead of a geocoding service.
  * The input value is a plain string, so it can be used with Final Form's <Field>.
+ * If getSuggestions corrected the spelling of the typed text, the corrected text is shown
+ * above the suggestions.
  *
  * @component
  * @param {Object} props
@@ -31,7 +36,7 @@ const KEY_CODE_ESC = 27;
  * @param {Function} props.input.onFocus
  * @param {Function} props.input.onBlur
  * @param {Object?} props.inputRef ref forwarded to the input element
- * @param {Function} props.getSuggestions query => Promise<Array<{ id: string, title: string }>>
+ * @param {Function} props.getSuggestions query => Promise<{ suggestions: Array<{ id: string, title: string }>, correctedKeywords: string|null }>
  * @param {Function} props.onSelect called with the selected suggestion ({ id, title })
  * @returns {JSX.Element} keyword input with suggestions
  */
@@ -47,6 +52,7 @@ const KeywordAutocompleteInput = props => {
     onSelect,
   } = props;
   const [suggestions, setSuggestions] = useState([]);
+  const [correctedKeywords, setCorrectedKeywords] = useState(null);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const [isOpen, setIsOpen] = useState(false);
   const timeoutRef = useRef(null);
@@ -68,7 +74,8 @@ const KeywordAutocompleteInput = props => {
       .then(results => {
         // Ignore responses to earlier queries that arrive after the user has kept typing
         if (latestQueryRef.current === query) {
-          setSuggestions(results);
+          setSuggestions(results.suggestions);
+          setCorrectedKeywords(results.correctedKeywords);
           setHighlightedIndex(-1);
         }
       })
@@ -76,6 +83,7 @@ const KeywordAutocompleteInput = props => {
         console.error(e);
         if (latestQueryRef.current === query) {
           setSuggestions([]);
+          setCorrectedKeywords(null);
         }
       });
   };
@@ -91,6 +99,7 @@ const KeywordAutocompleteInput = props => {
 
     if (query.length < MIN_QUERY_LENGTH) {
       setSuggestions([]);
+      setCorrectedKeywords(null);
       setHighlightedIndex(-1);
       return;
     }
@@ -100,6 +109,7 @@ const KeywordAutocompleteInput = props => {
   const selectSuggestion = suggestion => {
     input.onChange(suggestion.title);
     setSuggestions([]);
+    setCorrectedKeywords(null);
     setHighlightedIndex(-1);
     setIsOpen(false);
     onSelect(suggestion);
@@ -150,6 +160,9 @@ const KeywordAutocompleteInput = props => {
         type="text"
         placeholder={placeholder}
         autoComplete="off"
+        spellCheck={true}
+        autoCorrect="on"
+        autoCapitalize="none"
         role="combobox"
         aria-autocomplete="list"
         aria-expanded={showSuggestions}
@@ -162,6 +175,14 @@ const KeywordAutocompleteInput = props => {
       />
       {showSuggestions ? (
         <div className={predictionsClasses}>
+          {correctedKeywords ? (
+            <p className={keywordCss.correctedKeywords} aria-live="polite">
+              <FormattedMessage
+                id="KeywordAutocompleteInput.showingResultsFor"
+                values={{ keywords: <strong>{correctedKeywords}</strong> }}
+              />
+            </p>
+          ) : null}
           <ul className={css.predictions} id={listboxId} role="listbox">
             {suggestions.map((suggestion, index) => (
               <li

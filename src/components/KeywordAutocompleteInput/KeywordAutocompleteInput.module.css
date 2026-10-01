@@ -1,0 +1,15 @@
+@import '../../styles/customMediaQueries.css';
+
+/* "Showing results for ..." line above the suggestions, aligned with the suggestion texts */
+.correctedKeywords {
+  composes: marketplaceBodyFontStyles from global;
+
+  margin: 0;
+  padding: 12px 24px 0 30px;
+  color: var(--colorWhite);
+
+  @media (--viewportMedium) {
+    padding: 16px 36px 0 42px;
+    color: var(--colorLightTransparent);
+  }
+}

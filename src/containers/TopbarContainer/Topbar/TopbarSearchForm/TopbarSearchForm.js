@@ -8,7 +8,7 @@ import { isMainSearchTypeKeywords } from '../../../../util/search';
 
 import { Form, KeywordAutocompleteInput, LocationAutocompleteInput } from '../../../../components';
 
-import { fetchKeywordSuggestions } from '../../TopbarContainer.duck';
+import { autocorrectKeywords, fetchKeywordSuggestions } from '../../TopbarContainer.duck';
 
 import IconSearchDesktop from './IconSearchDesktop';
 import css from './TopbarSearchForm.module.css';
@@ -23,10 +23,12 @@ const KeywordSearchField = props => {
     isMobile = false,
     inputRef,
     onSuggestionSelect,
+    appConfig,
   } = props;
   const dispatch = useDispatch();
-  // Listing titles matching the typed text (like the geocoder does for LocationAutocompleteInput)
-  const getKeywordSuggestions = query => dispatch(fetchKeywordSuggestions(query));
+  // Listing titles matching the typed text (like the geocoder does for LocationAutocompleteInput).
+  // Typos are corrected if nothing matches the typed text.
+  const getKeywordSuggestions = query => dispatch(fetchKeywordSuggestions(query, appConfig));
 
   return (
     <div className={keywordSearchWrapperClasses}>
@@ -128,6 +130,7 @@ const LocationSearchField = props => {
 const TopbarSearchForm = props => {
   const searchInpuRef = useRef(null);
   const intl = useIntl();
+  const dispatch = useDispatch();
   const { appConfig, onSubmit, ...restOfProps } = props;
 
   const onChange = location => {
@@ -144,9 +147,12 @@ const TopbarSearchForm = props => {
 
   const onKeywordSubmit = values => {
     if (isMainSearchTypeKeywords(appConfig)) {
-      onSubmit({ keywords: values.keywords });
       // blur search input to hide software keyboard
       searchInpuRef?.current?.blur();
+      // Search with the corrected keywords if the typed ones have typos ("sheor" => "shoes")
+      return dispatch(autocorrectKeywords(values.keywords, appConfig)).then(keywords => {
+        onSubmit({ keywords });
+      });
     }
   };
 
@@ -197,6 +203,7 @@ const TopbarSearchForm = props => {
                 isMobile={isMobile}
                 inputRef={searchInpuRef}
                 onSuggestionSelect={onKeywordSuggestionSelect}
+                appConfig={appConfig}
               />
             ) : (
               <LocationSearchField

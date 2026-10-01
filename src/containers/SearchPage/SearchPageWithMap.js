@@ -26,6 +26,7 @@ import {
 } from './SearchPage.shared';
 
 import FilterComponent from './FilterComponent';
+import ActiveFilterChips from './ActiveFilterChips/ActiveFilterChips';
 import SearchMap from './SearchMap/SearchMap';
 import MainPanelHeader from './MainPanelHeader/MainPanelHeader';
 import SearchFiltersSecondary from './SearchFiltersSecondary/SearchFiltersSecondary';
@@ -400,6 +401,14 @@ export class SearchPageComponent extends Component {
                   );
                 })}
               </SearchFiltersPrimary>
+              <ActiveFilterChips
+                filterConfigs={availableFilters}
+                selectedFilters={validQueryParams}
+                listingCategories={listingCategories}
+                marketplaceCurrency={marketplaceCurrency}
+                onChange={this.getHandleChangedValueFn(true)}
+                intl={intl}
+              />
             </MainPanelHeader>
             {isSecondaryFiltersOpen ? (
               <div className={classNames(css.searchFiltersPanel)}>

@@ -1,4 +1,6 @@
 {
+  "ActiveFilterChips.clearAll": "Tout effacer",
+  "ActiveFilterChips.removeFilter": "Retirer le filtre : {label}",
   "AddressLinkMaybe.viewOnGoogleMaps": "Voir sur Google Maps",
   "AuthenticationPage.confirmSignupInfoText": "Veuillez vérifier que vos informations sont correctes.",
   "AuthenticationPage.confirmSignupWithIdpTitle": "S'inscrire avec {idp}",

@@ -309,6 +309,8 @@ export class SearchPageComponent extends Component {
         />
       ) : null;
     };
+    // Same check as in NoSearchResultsMaybe
+    const hasNoResults = listingsAreLoaded && totalItems === 0;
     const noResultsInfo = (
       <NoSearchResultsMaybe
         listingsAreLoaded={listingsAreLoaded}
@@ -342,7 +344,12 @@ export class SearchPageComponent extends Component {
         title={title}
         schema={schema}
       >
-        <TopbarContainer rootClassName={topbarClasses} currentSearchParams={validQueryParams} />
+        <TopbarContainer
+          rootClassName={topbarClasses}
+          currentSearchParams={validQueryParams}
+          // With no results, NoSearchResultsMaybe already shows a "Try AI search" button
+          showAISearchButton={!hasNoResults}
+        />
         <div id="main-content" className={css.container} role="main">
           <div className={css.searchResultContainer}>
             {listingTypeFilter ? (

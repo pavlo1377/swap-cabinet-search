@@ -22,7 +22,8 @@
   color: var(--colorGrey700);
   background-color: var(--colorWhite);
   border: 1px solid var(--colorGrey300);
-  border-radius: 18px;
+  /* Same as PrimaryButton, e.g. the search button on the landing page */
+  border-radius: var(--borderRadiusMedium);
   cursor: pointer;
   transition: all var(--transitionStyleButton);
 
@@ -35,7 +36,6 @@
   @media (--viewportMedium) {
     height: 40px;
     padding: 0 24px;
-    border-radius: 20px;
   }
 }
 

@@ -1,0 +1,116 @@
+@import '../../styles/customMediaQueries.css';
+
+/* Same look as <Button> (marketplace color), with a soft pulse to draw attention */
+.root {
+  composes: buttonDefault from global;
+
+  /* Set here too, so nothing else can override the button colors */
+  color: var(--colorWhite);
+  background-color: var(--marketplaceColor);
+
+  position: relative;
+  /* Keeps the pulse ring (z-index: -1) behind the button but above the page */
+  isolation: isolate;
+
+  display: inline-flex;
+  align-items: center;
+  width: auto;
+  min-height: 48px;
+  padding: 0 24px;
+  border-radius: 16px;
+
+  transition: transform var(--transitionStyleButton), background-color var(--transitionStyleButton);
+
+  &:hover,
+  &:focus {
+    color: var(--colorWhite);
+    background-color: var(--marketplaceColorDark);
+    text-decoration: none;
+    transform: translateY(-2px);
+  }
+
+  /* Pressed: back down */
+  &:active {
+    transform: translateY(0);
+  }
+
+  /* Soft pulsing ring around the button */
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background-color: var(--marketplaceColor);
+    animation: pulse 2.5s ease-out 1s infinite;
+  }
+
+  @media (--viewportMedium) {
+    min-height: 56px;
+    padding: 0 32px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+
+    &::before {
+      animation: none;
+    }
+
+    &:hover,
+    &:focus {
+      transform: none;
+    }
+  }
+}
+
+/* Floating in the bottom right corner of the screen */
+.floating {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: var(--zIndexPopup);
+
+  /* Lifts the floating button off the page content */
+  box-shadow: var(--boxShadowPopup);
+
+  /* Slides in from below shortly after the page has loaded.
+     "backwards": hidden during the delay, but doesn't block the hover transform afterwards */
+  animation: slideIn 400ms ease-out 300ms backwards;
+
+  &:hover,
+  &:focus {
+    box-shadow: var(--boxShadowPopup);
+  }
+
+  @media (--viewportMedium) {
+    right: 32px;
+    bottom: 32px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.4;
+  }
+  100% {
+    transform: scale(1.75, 1.75);
+    opacity: 0;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

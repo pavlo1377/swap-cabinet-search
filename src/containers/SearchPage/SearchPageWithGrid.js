@@ -192,6 +192,8 @@ export class SearchPageComponent extends Component {
         />
       ) : null;
     };
+    // Same check as in NoSearchResultsMaybe
+    const hasNoResults = listingsAreLoaded && totalItems === 0;
     const noResultsInfo = (
       <NoSearchResultsMaybe
         listingsAreLoaded={listingsAreLoaded}
@@ -214,9 +216,6 @@ export class SearchPageComponent extends Component {
 
     // N.B. openMobileMap button is sticky.
     // For some reason, stickyness doesn't work on Safari, if the element is <button>
-
-    console.log('available filters:', availableFilters);
-
     return (
       <Page
         scrollingDisabled={scrollingDisabled}
@@ -224,7 +223,12 @@ export class SearchPageComponent extends Component {
         title={title}
         schema={schema}
       >
-        <TopbarContainer rootClassName={topbarClasses} currentSearchParams={validQueryParams} />
+        <TopbarContainer
+          rootClassName={topbarClasses}
+          currentSearchParams={validQueryParams}
+          // With no results, NoSearchResultsMaybe already shows a "Try AI search" button
+          showAISearchButton={!hasNoResults}
+        />
         <div className={css.layoutWrapperContainer}>
           <aside className={css.layoutWrapperFilterColumn} data-testid="filterColumnAside">
             <div className={css.filterColumnContent}>

@@ -134,7 +134,10 @@ class FilterPlainComponent extends Component {
       containerId, // Note: this could be used to identify different filter containers
     } = this.props;
     const formId = `${id}.form`;
-    const classes = classNames(rootClassName || css.root, className);
+    // A filter with a selected value is highlighted with the marketplace color
+    const classes = classNames(rootClassName || css.root, className, {
+      [css.selected]: isSelected,
+    });
     const inertMaybe = this.state.isOpen ? {} : { inert: '' };
     const isInput = element => element?.tagName?.toLowerCase() === 'input';
 
@@ -263,7 +266,11 @@ class FilterPlainComponent extends Component {
                 </span>
               </span>
               <span className={css.openSign}>
-                <IconPlus isOpen={this.state.isOpen} isSelected={isSelected} />
+                <IconPlus
+                  className={css.openIcon}
+                  isOpen={this.state.isOpen}
+                  isSelected={isSelected}
+                />
               </span>
             </span>
           </button>

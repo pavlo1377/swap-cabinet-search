@@ -13,7 +13,34 @@
   }
 }
 
+/* Selected filter: label, +/- icon and a bar next to the label in the marketplace color */
+.selected {
+  & .label,
+  & .label * {
+    color: var(--marketplaceColor);
+  }
+
+  & .openIcon {
+    stroke: var(--marketplaceColor);
+  }
+
+  /* The bar sits in the filter column's left padding, so the filter texts stay aligned */
+  @media (--viewportMedium) {
+    & .filterHeader::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -12px;
+      width: 3px;
+      height: 24px;
+      border-radius: 2px;
+      background-color: var(--marketplaceColor);
+    }
+  }
+}
+
 .filterHeader {
+  position: relative;
   line-height: 24px;
 }
 

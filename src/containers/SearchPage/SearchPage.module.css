@@ -222,6 +222,28 @@
   }
 }
 
+/* Listing type tabs above the results */
+.listingTypeTabs {
+  padding-top: 12px;
+
+  @media (--viewportMedium) {
+    padding-top: 0;
+    margin-bottom: 16px;
+  }
+}
+
+.listingTypeTabsMapVariant {
+  padding: 16px 24px 0 24px;
+
+  @media (--viewportMedium) {
+    padding: 18px 24px 0 24px;
+  }
+
+  @media (--viewportLarge) {
+    padding: 24px 36px 0 36px;
+  }
+}
+
 .searchFiltersMobileMap {
   padding: 16px 24px;
 

@@ -630,6 +630,7 @@
   "ListingPage.reviewsTitle": "Avis ({count})",
   "ListingPage.schemaTitle": "{title} | {marketplaceName}",
   "ListingPage.viewImagesButton": "Voir les photos ({count})",
+  "ListingTypeTabs.all": "Tous",
   "LoadableComponentErrorBoundaryPage.description": "Il semble que l'application doive être mise à jour ! Veuillez actualiser la page ou revenir à {link}.",
   "LoadableComponentErrorBoundaryPage.heading": "Oups, nous n'avons pas pu récupérer la page.",
   "LoadableComponentErrorBoundaryPage.landingPageLink": "la page d'accueil",

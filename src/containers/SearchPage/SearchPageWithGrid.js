@@ -22,6 +22,7 @@ import {
 
 import FilterComponent from './FilterComponent';
 import ActiveFilterChips from './ActiveFilterChips/ActiveFilterChips';
+import ListingTypeTabs from './ListingTypeTabs/ListingTypeTabs';
 import MainPanelHeader from './MainPanelHeader/MainPanelHeader';
 import SearchFiltersMobile from './SearchFiltersMobile/SearchFiltersMobile';
 import SortBy from './SortBy/SortBy';
@@ -207,8 +208,15 @@ export class SearchPageComponent extends Component {
       ? classNames(css.topbarBehindModal, css.topbar)
       : css.topbar;
 
+    // Listing type is shown as tabs above the results, so it's left out of the filter lists and chips
+    const listingTypeFilter = availableFilters.find(f => f.schemaType === 'listingType');
+    const filters = availableFilters.filter(f => f.schemaType !== 'listingType');
+
     // N.B. openMobileMap button is sticky.
     // For some reason, stickyness doesn't work on Safari, if the element is <button>
+
+    console.log('available filters:', availableFilters);
+
     return (
       <Page
         scrollingDisabled={scrollingDisabled}
@@ -220,7 +228,7 @@ export class SearchPageComponent extends Component {
         <div className={css.layoutWrapperContainer}>
           <aside className={css.layoutWrapperFilterColumn} data-testid="filterColumnAside">
             <div className={css.filterColumnContent}>
-              {availableFilters.map(filterConfig => {
+              {filters.map(filterConfig => {
                 const key = `SearchFiltersDesktop.${filterConfig.scope || 'built-in'}.${
                   filterConfig.key
                 }`;
@@ -252,6 +260,15 @@ export class SearchPageComponent extends Component {
 
           <div id="main-content" className={css.layoutWrapperMain} role="main">
             <div className={css.searchResultContainer}>
+              {listingTypeFilter ? (
+                <ListingTypeTabs
+                  className={css.listingTypeTabs}
+                  filterConfig={listingTypeFilter}
+                  selectedFilters={validQueryParams}
+                  onChange={this.getHandleChangedValueFn(true)}
+                  intl={intl}
+                />
+              ) : null}
               <SearchFiltersMobile
                 className={css.searchFiltersMobileList}
                 urlQueryParams={validQueryParams}
@@ -270,7 +287,7 @@ export class SearchPageComponent extends Component {
                 noResultsInfo={noResultsInfo}
                 location={location}
               >
-                {availableFilters.map(filterConfig => {
+                {filters.map(filterConfig => {
                   const key = `SearchFiltersMobile.${filterConfig.scope || 'built-in'}.${
                     filterConfig.key
                   }`;
@@ -305,7 +322,7 @@ export class SearchPageComponent extends Component {
                 noResultsInfo={noResultsInfo}
               >
                 <ActiveFilterChips
-                  filterConfigs={availableFilters}
+                  filterConfigs={filters}
                   selectedFilters={validQueryParams}
                   listingCategories={listingCategories}
                   marketplaceCurrency={marketplaceCurrency}

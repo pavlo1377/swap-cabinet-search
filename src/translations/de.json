@@ -645,6 +645,7 @@
   "ListingPage.reviewsTitle": "Bewertungen ({count})",
   "ListingPage.schemaTitle": "{title} | {marketplaceName}",
   "ListingPage.viewImagesButton": "Fotos anzeigen ({count})",
+  "ListingTypeTabs.all": "Alle",
   "LoadableComponentErrorBoundaryPage.description": "Es sieht so aus, als müsste die App aktualisiert werden! Bitte aktualisiere die Seite oder kehre zu {link} zurück.",
   "LoadableComponentErrorBoundaryPage.heading": "Hoppla, wir konnten die Seite nicht abrufen.",
   "LoadableComponentErrorBoundaryPage.landingPageLink": "Startseite",

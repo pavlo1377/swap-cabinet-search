@@ -64,6 +64,8 @@ const FilterComponent = props => {
           options={convertCategoriesToSelectTreeOptions(listingCategories)}
           isNestedEnum={isNestedEnum}
           getAriaLabel={getAriaLabel}
+          // Built-in primary filters are open in the sidebar, other filters are collapsed
+          initiallyOpen
           {...rest}
         />
       );
@@ -82,6 +84,7 @@ const FilterComponent = props => {
           onSubmit={getHandleChangedValueFn(useHistoryPush)}
           options={options}
           getAriaLabel={getAriaLabel}
+          initiallyOpen
           {...rest}
         />
       );

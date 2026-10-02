@@ -630,6 +630,7 @@
   "ListingPage.reviewsTitle": "Evaluaciones ({count})",
   "ListingPage.schemaTitle": "{title} | {marketplaceName}",
   "ListingPage.viewImagesButton": "Ver fotos ({count})",
+  "ListingTypeTabs.all": "Todos",
   "LoadableComponentErrorBoundaryPage.description": "¡Parece que es necesario actualizar la aplicación! Actualiza la página o regresa a {link}.",
   "LoadableComponentErrorBoundaryPage.heading": "No pudimos obtener la página.",
   "LoadableComponentErrorBoundaryPage.landingPageLink": "Página principal",

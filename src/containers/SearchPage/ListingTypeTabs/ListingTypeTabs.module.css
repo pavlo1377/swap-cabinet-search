@@ -1,0 +1,52 @@
+@import '../../../styles/customMediaQueries.css';
+
+/* Spacing around the tabs comes from the page layout (className) */
+.root {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+
+  @media (--viewportMedium) {
+    gap: 8px;
+  }
+}
+
+.tab {
+  composes: textSmall from global;
+  font-weight: var(--fontWeightMedium);
+
+  height: 36px;
+  margin: 0;
+  padding: 0 18px;
+
+  color: var(--colorGrey700);
+  background-color: var(--colorWhite);
+  border: 1px solid var(--colorGrey300);
+  border-radius: 18px;
+  cursor: pointer;
+  transition: all var(--transitionStyleButton);
+
+  &:hover,
+  &:focus {
+    color: var(--colorGrey900);
+    border-color: var(--colorGrey700);
+  }
+
+  @media (--viewportMedium) {
+    height: 40px;
+    padding: 0 24px;
+    border-radius: 20px;
+  }
+}
+
+.selected {
+  color: var(--colorWhite);
+  background-color: var(--marketplaceColor);
+  border-color: var(--marketplaceColor);
+
+  &:hover,
+  &:focus {
+    color: var(--colorWhite);
+    border-color: var(--marketplaceColor);
+  }
+}

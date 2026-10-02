@@ -575,6 +575,7 @@
   "IntegerRangeFilter.labelSelectedPlain": "{minValue} - {maxValue}",
   "IntegerRangeFilter.rangeInputsLabel": "Rango:",
   "IntegerRangeFilter.screenreader.rangeHandle": "{handle, select, min {Inicio del rango {value}} max {Fin del rango {value}} other {Valor seleccionado {value}}}",
+  "KeywordAutocompleteInput.recentlyViewed": "Vistos recientemente",
   "KeywordAutocompleteInput.showingResultsFor": "Mostrando resultados para {keywords}",
   "KeywordFilter.filterText": "Filtrar los resultados por",
   "KeywordFilter.labelSelected": "\"{labelText}\"",

@@ -6,6 +6,7 @@ import classNames from 'classnames';
 // Utils
 import { FormattedMessage } from '../../util/reactIntl';
 import { LISTING_STATE_CLOSED, propTypes } from '../../util/types';
+import { saveRecentVisit } from '../../util/recentVisits';
 import { OFFER, REQUEST } from '../../transactions/transaction';
 
 // Global ducks (for Redux actions and thunks)
@@ -143,6 +144,15 @@ export const ListingPageComponent = props => {
     noIndexMaybe,
     hasInvalidListingData,
   } = derivedData;
+
+  // Remember the visit for the "Recently viewed" list in the keyword search.
+  // Runs again when the user moves to another listing. Own listings and drafts are skipped.
+  const visitedListingId = currentListing.id?.uuid;
+  useEffect(() => {
+    if (visitedListingId && !isOwnListing && !isVariant) {
+      saveRecentVisit({ id: visitedListingId, slug: listingSlug, title });
+    }
+  }, [visitedListingId]);
 
   const topbar = <TopbarContainer />;
 

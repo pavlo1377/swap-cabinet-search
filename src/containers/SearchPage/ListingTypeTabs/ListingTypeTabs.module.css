@@ -1,31 +1,27 @@
 @import '../../../styles/customMediaQueries.css';
 
+/* Spacing around the tabs comes from the page layout (className) */
 .root {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  margin-bottom: 12px;
 
   @media (--viewportMedium) {
     gap: 8px;
-    margin-bottom: 16px;
   }
 }
 
-.chip {
+.tab {
   composes: textSmall from global;
   font-weight: var(--fontWeightMedium);
 
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  height: 30px;
+  height: 36px;
   margin: 0;
-  padding: 0 12px;
+  padding: 0 18px;
 
-  color: var(--marketplaceColor);
+  color: var(--colorGrey700);
   background-color: var(--colorWhite);
-  border: 1px solid var(--marketplaceColor);
+  border: 1px solid var(--colorGrey300);
   /* Same as PrimaryButton, e.g. the search button on the landing page */
   border-radius: var(--borderRadiusMedium);
   cursor: pointer;
@@ -33,31 +29,24 @@
 
   &:hover,
   &:focus {
-    color: var(--colorWhite);
-    background-color: var(--marketplaceColor);
+    color: var(--colorGrey900);
+    border-color: var(--colorGrey700);
   }
 
   @media (--viewportMedium) {
-    height: 32px;
-    padding: 0 16px;
+    height: 40px;
+    padding: 0 24px;
   }
 }
 
-.removeIcon {
-  font-size: 18px;
-  line-height: 1;
-}
-
-.clearAll {
-  composes: chip;
-
-  color: var(--colorGrey700);
-  border-color: var(--colorGrey300);
+.selected {
+  color: var(--colorWhite);
+  background-color: var(--marketplaceColor);
+  border-color: var(--marketplaceColor);
 
   &:hover,
   &:focus {
     color: var(--colorWhite);
-    background-color: var(--colorGrey700);
-    border-color: var(--colorGrey700);
+    border-color: var(--marketplaceColor);
   }
 }

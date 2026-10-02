@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Form as FinalForm, Field } from 'react-final-form';
 
@@ -7,6 +7,7 @@ import { useConfiguration } from '../../context/configurationContext';
 import { FormattedMessage, useIntl } from '../../util/reactIntl';
 import { isScrollingDisabled } from '../../ducks/ui.duck';
 import { makeGetListingsByIdSelector } from '../../ducks/marketplaceData.duck';
+import { resizeImageFile } from '../../util/imageFile';
 
 // Shared components
 import {
@@ -26,6 +27,8 @@ import { searchWithAI } from './AISearchPage.duck';
 import css from './AISearchPage.module.css';
 
 const TEXT_MAX_LENGTH = 500;
+// Visible lines of the search text area
+const TEXTAREA_ROWS = 3;
 
 // Card image sizes for the grid (same as the SearchPage grid)
 const CARD_RENDER_SIZES = [
@@ -85,8 +88,9 @@ const Results = props => {
 };
 
 /**
- * AI search page: the shopper describes what they want in their own words, Claude picks the
- * matching listings and they are shown here. No filters and no map, just Claude's picks.
+ * AI search page: the shopper describes what they want in their own words and/or adds a photo
+ * of a similar item, Claude picks the matching listings and they are shown here.
+ * No filters and no map, just Claude's picks.
  *
  * @returns {JSX.Element} AI search page
  */
@@ -102,10 +106,35 @@ const AISearchPage = () => {
   const listings = useSelector(state => getListingsById(state, resultIds));
   const scrollingDisabled = useSelector(isScrollingDisabled);
 
+  // Optional photo of the wanted item: { mediaType, data, previewUrl }
+  const [photo, setPhoto] = useState(null);
+  const [photoError, setPhotoError] = useState(false);
+
+  const handlePhotoChange = e => {
+    const file = e.target.files?.[0];
+    // Reset the input, so the same file can be picked again after removing it
+    e.target.value = '';
+    if (!file) {
+      return;
+    }
+    setPhotoError(false);
+    resizeImageFile(file)
+      .then(setPhoto)
+      .catch(() => {
+        setPhoto(null);
+        setPhotoError(true);
+      });
+  };
+
+  // With a photo, the text is only for extra wishes, e.g. "but in black"
+  const placeholderId = photo ? 'AISearchPage.placeholderWithPhoto' : 'AISearchPage.placeholder';
+
   const handleSubmit = values => {
     const text = values.text?.trim();
-    if (text) {
-      dispatch(searchWithAI({ text, config }));
+    if (text || photo) {
+      // The server only needs the photo data, not the preview
+      const image = photo ? { mediaType: photo.mediaType, data: photo.data } : undefined;
+      dispatch(searchWithAI({ text, image, config }));
     }
   };
 
@@ -128,31 +157,84 @@ const AISearchPage = () => {
               onSubmit={handleSubmit}
               render={({ handleSubmit, values }) => (
                 <Form className={css.form} onSubmit={handleSubmit}>
-                  <Field
-                    name="text"
-                    render={({ input }) => (
+                  {/* Search box: the attached photo (if any) on the left, then the text area */}
+                  <div className={css.searchBox}>
+                    {photo ? (
+                      <div className={css.photoPreview}>
+                        <img
+                          className={css.photoImage}
+                          src={photo.previewUrl}
+                          alt={intl.formatMessage({ id: 'AISearchPage.photoAlt' })}
+                        />
+                        <button
+                          type="button"
+                          className={css.removePhoto}
+                          onClick={() => setPhoto(null)}
+                          aria-label={intl.formatMessage({ id: 'AISearchPage.removePhoto' })}
+                          title={intl.formatMessage({ id: 'AISearchPage.removePhoto' })}
+                        >
+                          <span aria-hidden="true">×</span>
+                        </button>
+                      </div>
+                    ) : null}
+                    <Field
+                      name="text"
+                      render={({ input }) => (
+                        <textarea
+                          {...input}
+                          className={css.textarea}
+                          rows={TEXTAREA_ROWS}
+                          maxLength={TEXT_MAX_LENGTH}
+                          aria-label={intl.formatMessage({ id: 'AISearchPage.heading' })}
+                          placeholder={intl.formatMessage({ id: placeholderId })}
+                          onKeyDown={e => {
+                            // Enter searches, Shift+Enter adds a new line.
+                            // isComposing: Enter that confirms an IME input (e.g. Japanese) doesn't search.
+                            const isSubmitKey =
+                              e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing;
+                            if (isSubmitKey) {
+                              e.preventDefault();
+                              if (!searchInProgress) {
+                                handleSubmit();
+                              }
+                            }
+                          }}
+                        />
+                      )}
+                    />
+                  </div>
+
+                  <div className={css.actions}>
+                    {/* The label is the visible button, the file input itself is hidden */}
+                    <label className={css.photoButton}>
                       <input
-                        {...input}
-                        className={css.input}
-                        type="text"
-                        maxLength={TEXT_MAX_LENGTH}
-                        autoComplete="off"
-                        aria-label={intl.formatMessage({ id: 'AISearchPage.heading' })}
-                        placeholder={intl.formatMessage({ id: 'AISearchPage.placeholder' })}
+                        className={css.photoInput}
+                        type="file"
+                        accept="image/*"
+                        onChange={handlePhotoChange}
                       />
-                    )}
-                  />
-                  <PrimaryButton
-                    className={css.submit}
-                    type="submit"
-                    inProgress={searchInProgress}
-                    disabled={!values.text?.trim() || searchInProgress}
-                  >
-                    <FormattedMessage id="AISearchPage.submit" />
-                  </PrimaryButton>
+                      <FormattedMessage
+                        id={photo ? 'AISearchPage.changePhoto' : 'AISearchPage.addPhoto'}
+                      />
+                    </label>
+                    <PrimaryButton
+                      className={css.submit}
+                      type="submit"
+                      inProgress={searchInProgress}
+                      disabled={(!values.text?.trim() && !photo) || searchInProgress}
+                    >
+                      <FormattedMessage id="AISearchPage.submit" />
+                    </PrimaryButton>
+                  </div>
                 </Form>
               )}
             />
+
+            {photoError ? (
+              <p className={css.error} role="alert">
+                <FormattedMessage id="AISearchPage.photoError" />
+              </p>
+            ) : null}
           </header>
 
           <Results

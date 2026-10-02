@@ -1655,8 +1655,8 @@ const mergeSearchConfig = (
   //       It might be somewhat strange experience if a primary filter is among those filters
   //       that are affected by category selection.
   const defaultFilters = [
-    ...listingTypeFilterMaybe,
     ...categoryFilterMaybe,
+    ...listingTypeFilterMaybe,
     dateRangeFilter,
     ...seatsFilterMaybe,
     priceFilter,

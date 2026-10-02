@@ -9,16 +9,18 @@ import { addMarketplaceEntities } from '../../ducks/marketplaceData.duck';
 
 /**
  * AI search:
- * 1. our server asks Claude which listings match the text (POST /api/ai-search)
+ * 1. our server asks Claude which listings match the text and/or the photo (POST /api/ai-search)
  * 2. those listings are loaded from Sharetribe, with an image for the listing card
  * 3. the ids are kept in Claude's order (best match first)
+ *
+ * image is optional: { mediaType, data } with base64 data (see util/imageFile.js)
  */
 export const searchWithAI = createAsyncThunk(
   'AISearchPage/searchWithAI',
-  async ({ text, config }, { dispatch, rejectWithValue, extra: sdk }) => {
+  async ({ text, image, config }, { dispatch, rejectWithValue, extra: sdk }) => {
     try {
       // 1. Claude picks the listings
-      const { listingIds } = await aiSearch({ text });
+      const { listingIds } = await aiSearch({ text, image });
       if (listingIds.length === 0) {
         return [];
       }

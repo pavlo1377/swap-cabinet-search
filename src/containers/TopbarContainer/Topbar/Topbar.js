@@ -11,6 +11,7 @@ import { isMainSearchTypeKeywords, isOriginInUse } from '../../../util/search';
 import { parse, stringify } from '../../../util/urlHelpers';
 import { createResourceLocatorString, matchPathname, pathByRouteName } from '../../../util/routes';
 import {
+  AISearchButton,
   Button,
   IconArrowHead,
   LimitedAccessBanner,
@@ -25,7 +26,6 @@ import SearchIcon from './SearchIcon';
 import TopbarSearchForm from './TopbarSearchForm/TopbarSearchForm';
 import TopbarMobileMenu from './TopbarMobileMenu/TopbarMobileMenu';
 import TopbarDesktop from './TopbarDesktop/TopbarDesktop';
-import AISearchButton from './AISearchButton/AISearchButton';
 
 import css from './Topbar.module.css';
 import { getCurrentUserTypeRoles, showCreateListingLinkForUser } from '../../../util/userHelpers';
@@ -155,6 +155,7 @@ const TopbarComponent = props => {
     sendVerificationEmailInProgress,
     sendVerificationEmailError,
     showGenericError,
+    showAISearchButton = true,
     config,
     routeConfiguration,
   } = props;
@@ -349,7 +350,10 @@ const TopbarComponent = props => {
         <IconArrowHead direction="right" size="small" rootClassName={css.skiptoMainArrow} />
       </Button>
       {/* Floating button on every page, except on the AI search page itself */}
-      {resolvedCurrentPage !== 'AISearchPage' ? <AISearchButton /> : null}
+      {/* Hidden on the AI search page itself, and when the page shows its own AI search button */}
+      {showAISearchButton && resolvedCurrentPage !== 'AISearchPage' ? (
+        <AISearchButton isFloating />
+      ) : null}
       <LimitedAccessBanner
         isAuthenticated={isAuthenticated}
         isLoggedInAs={isLoggedInAs}
@@ -473,6 +477,7 @@ const TopbarComponent = props => {
  * @param {Object} props.sendVerificationEmailInProgress
  * @param {Object} props.sendVerificationEmailError
  * @param {boolean} props.showGenericError
+ * @param {boolean?} props.showAISearchButton show the floating "Try AI search" button (default true)
  * @param {Object} props.history
  * @param {Function} props.history.push
  * @param {Object} props.location

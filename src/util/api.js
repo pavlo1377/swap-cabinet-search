@@ -56,7 +56,8 @@ const request = (path, options = {}) => {
   // If headers are not set, we assume that the body should be serialized as transit format.
   const shouldSerializeBody =
     (!headers || headers['Content-Type'] === 'application/transit+json') && body;
-  const bodyMaybe = shouldSerializeBody ? { body: serialize(body) } : {};
+  // Other bodies (e.g. a JSON string) are sent as they are.
+  const bodyMaybe = shouldSerializeBody ? { body: serialize(body) } : body ? { body } : {};
 
   const fetchOptions = {
     credentials: credentials || 'include',
@@ -152,10 +153,13 @@ export const deleteUserAccount = body => {
   return post('/api/delete-account', body);
 };
 
-// AI search: Claude picks the listings that match the text.
+// AI search: Claude picks the listings that match the text and/or the photo.
 //
-// See `server/api/ai-search.js` for the request body ({ text }) and the
+// See `server/api/ai-search.js` for the request body ({ text, image }) and the
 // response ({ listingIds }).
+// Sent as plain JSON, because a photo is bigger than the server's Transit body limit (100kb).
 export const aiSearch = body => {
-  return post('/api/ai-search', body);
+  return post('/api/ai-search', JSON.stringify(body), {
+    headers: { 'Content-Type': 'application/json' },
+  });
 };

@@ -639,13 +639,14 @@ export const getDerivedRenderData = ({
   );
   const availablePrimaryFilters = [
     ...builtInPrimaryFilters,
-    ...customPrimaryFilters,
     ...builtInFilters,
+    ...customPrimaryFilters,
   ];
+  // Sidebar order: category & listing type, price, primary listing fields, secondary listing fields
   const availableFilters = [
     ...builtInPrimaryFilters,
-    ...customPrimaryFilters,
     ...builtInFilters,
+    ...customPrimaryFilters,
     ...customSecondaryFilters,
   ];
 

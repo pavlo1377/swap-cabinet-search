@@ -77,6 +77,7 @@ export { default as HelpText } from './HelpText/HelpText';
 // First components that include only atomic components //
 //////////////////////////////////////////////////////////
 
+export { default as AISearchButton } from './AISearchButton/AISearchButton';
 export { default as Button, PrimaryButton, PrimaryButtonInline, SecondaryButton, SecondaryButtonInline, InlineTextButton, SocialLoginButton } from './Button/Button';
 export { default as ErrorMessage } from './ErrorMessage/ErrorMessage';
 export { default as ImageFromFile } from './ImageFromFile/ImageFromFile';

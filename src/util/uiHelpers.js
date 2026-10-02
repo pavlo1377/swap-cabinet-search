@@ -71,6 +71,7 @@ export const withDimensions = (Component, options = {}) => {
       super(props);
       this.element = null;
       this.defaultRenderTimeout = null;
+      this.resizeObserver = null;
 
       this.state = { width: 0, height: 0 };
 
@@ -85,12 +86,20 @@ export const withDimensions = (Component, options = {}) => {
       this.defaultRenderTimeout = window.setTimeout(() => {
         this.setDimensions();
       }, RENDER_WAIT_MS);
+
+      // Measure again when the element's size changes without a window resize,
+      // e.g. when a collapsed parent (display: none) is opened
+      if (typeof window.ResizeObserver !== 'undefined' && this.element) {
+        this.resizeObserver = new window.ResizeObserver(() => this.setDimensions());
+        this.resizeObserver.observe(this.element);
+      }
     }
 
     componentWillUnmount() {
       window.removeEventListener('resize', this.handleWindowResize);
       window.removeEventListener('orientationchange', this.handleWindowResize);
       window.clearTimeout(this.defaultRenderTimeout);
+      this.resizeObserver?.disconnect();
     }
 
     handleWindowResize() {

@@ -34,7 +34,6 @@ export const getRecentVisits = () => {
 export const saveRecentVisit = visit => {
   try {
     // Remove the earlier visit of the same listing, so it isn't listed twice
-    console.log('Saving listing into the localStorage:', visit);
     const otherVisits = getRecentVisits().filter(v => v.id !== visit.id);
     const visits = [visit, ...otherVisits].slice(0, MAX_VISITS);
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(visits));

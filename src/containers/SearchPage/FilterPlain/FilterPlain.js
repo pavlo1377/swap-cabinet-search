@@ -70,13 +70,16 @@ const moveFocusToNextFocusableElement = (formId, direction = 'next') => {
  * @param {React.Node} props.children - The children
  * @param {Object} [props.initialValues] - The initial values
  * @param {boolean} [props.keepDirtyOnReinitialize] - Whether to keep dirty on reinitialize
+ * @param {boolean} [props.initiallyOpen] - Whether the filter is open on the first render (default false)
  * @param {intlShape} props.intl - The intl object
  * @returns {JSX.Element}
  */
 class FilterPlainComponent extends Component {
   constructor(props) {
     super(props);
-    this.state = { isOpen: true };
+    // Filters are collapsed by default. A filter is open if it's marked as initiallyOpen
+    // or if it already has a selected value, so the shopper sees what is selected.
+    this.state = { isOpen: !!(props.initiallyOpen || props.isSelected) };
 
     this.handleChange = this.handleChange.bind(this);
     this.handleClear = this.handleClear.bind(this);
@@ -131,7 +134,10 @@ class FilterPlainComponent extends Component {
       containerId, // Note: this could be used to identify different filter containers
     } = this.props;
     const formId = `${id}.form`;
-    const classes = classNames(rootClassName || css.root, className);
+    // A filter with a selected value is highlighted with the marketplace color
+    const classes = classNames(rootClassName || css.root, className, {
+      [css.selected]: isSelected,
+    });
     const inertMaybe = this.state.isOpen ? {} : { inert: '' };
     const isInput = element => element?.tagName?.toLowerCase() === 'input';
 
@@ -260,7 +266,11 @@ class FilterPlainComponent extends Component {
                 </span>
               </span>
               <span className={css.openSign}>
-                <IconPlus isOpen={this.state.isOpen} isSelected={isSelected} />
+                <IconPlus
+                  className={css.openIcon}
+                  isOpen={this.state.isOpen}
+                  isSelected={isSelected}
+                />
               </span>
             </span>
           </button>

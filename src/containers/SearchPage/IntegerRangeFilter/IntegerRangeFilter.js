@@ -85,8 +85,7 @@ const getHandleSubmit = (name, queryParamNames, onSubmit) => values => {
  * @param {number} [props.step] - The step
  * @param {Function} props.onSubmit - The function to submit
  * @param {Function} [props.formatValidRangeValues] - Function to format validRangeValues for display
- * @param {Function} [props.getLabelForRangeInput] - Function to get the aria label for the range input
- * @returns {JSX.Element}
+ * @param {Function} [props.getLabelForRangeInput] - Function to get the aria label for the range input * @returns {JSX.Element}
  */
 const IntegerRangeFilter = props => {
   const intl = useIntl();

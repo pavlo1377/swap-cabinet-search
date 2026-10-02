@@ -57,8 +57,8 @@ router.post('/transaction-line-items', transactionLineItems);
 router.post('/initiate-privileged', initiatePrivileged);
 router.post('/transition-privileged', transitionPrivileged);
 router.post('/delete-account', deleteAccount);
-// Also accepts plain JSON ({ "text": "..." }), e.g. for testing with Postman or curl
-router.post('/ai-search', bodyParser.json({ limit: '10kb' }), aiSearch);
+// Plain JSON ({ "text": "...", "image"?: {...} }). The limit fits a photo resized in the browser.
+router.post('/ai-search', bodyParser.json({ limit: '1.5mb' }), aiSearch);
 
 // Create user with identity provider (e.g. Facebook or Google)
 // This endpoint is called to create a new user after user has confirmed

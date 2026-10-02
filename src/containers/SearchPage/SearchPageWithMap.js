@@ -27,6 +27,7 @@ import {
 
 import FilterComponent from './FilterComponent';
 import ActiveFilterChips from './ActiveFilterChips/ActiveFilterChips';
+import ListingTypeTabs from './ListingTypeTabs/ListingTypeTabs';
 import SearchMap from './SearchMap/SearchMap';
 import MainPanelHeader from './MainPanelHeader/MainPanelHeader';
 import SearchFiltersSecondary from './SearchFiltersSecondary/SearchFiltersSecondary';
@@ -308,6 +309,8 @@ export class SearchPageComponent extends Component {
         />
       ) : null;
     };
+    // Same check as in NoSearchResultsMaybe
+    const hasNoResults = listingsAreLoaded && totalItems === 0;
     const noResultsInfo = (
       <NoSearchResultsMaybe
         listingsAreLoaded={listingsAreLoaded}
@@ -319,6 +322,12 @@ export class SearchPageComponent extends Component {
     );
 
     const { bounds, origin } = searchParamsInURL || {};
+
+    // Listing type is shown as tabs above the results, so it's left out of the filter lists and chips
+    const isListingType = f => f.schemaType === 'listingType';
+    const listingTypeFilter = availableFilters.find(isListingType);
+    const filters = availableFilters.filter(f => !isListingType(f));
+    const primaryFilters = availablePrimaryFilters.filter(f => !isListingType(f));
 
     // Set topbar class based on if a modal is open in
     // a child component
@@ -335,9 +344,23 @@ export class SearchPageComponent extends Component {
         title={title}
         schema={schema}
       >
-        <TopbarContainer rootClassName={topbarClasses} currentSearchParams={validQueryParams} />
+        <TopbarContainer
+          rootClassName={topbarClasses}
+          currentSearchParams={validQueryParams}
+          // With no results, NoSearchResultsMaybe already shows a "Try AI search" button
+          showAISearchButton={!hasNoResults}
+        />
         <div id="main-content" className={css.container} role="main">
           <div className={css.searchResultContainer}>
+            {listingTypeFilter ? (
+              <ListingTypeTabs
+                className={css.listingTypeTabsMapVariant}
+                filterConfig={listingTypeFilter}
+                selectedFilters={validQueryParams}
+                onChange={this.getHandleChangedValueFn(true)}
+                intl={intl}
+              />
+            ) : null}
             <SearchFiltersMobile
               className={css.searchFiltersMobileMap}
               urlQueryParams={validQueryParams}
@@ -357,7 +380,7 @@ export class SearchPageComponent extends Component {
               location={location}
               isMapVariant
             >
-              {availableFilters.map(filterConfig => {
+              {filters.map(filterConfig => {
                 const key = `SearchFiltersMobile.${filterConfig.scope || 'built-in'}.${
                   filterConfig.key
                 }`;
@@ -391,7 +414,7 @@ export class SearchPageComponent extends Component {
               noResultsInfo={noResultsInfo}
             >
               <SearchFiltersPrimary {...propsForSecondaryFiltersToggle}>
-                {availablePrimaryFilters.map(filterConfig => {
+                {primaryFilters.map(filterConfig => {
                   const key = `SearchFiltersPrimary.${filterConfig.scope || 'built-in'}.${
                     filterConfig.key
                   }`;
@@ -415,7 +438,7 @@ export class SearchPageComponent extends Component {
                 })}
               </SearchFiltersPrimary>
               <ActiveFilterChips
-                filterConfigs={availableFilters}
+                filterConfigs={filters}
                 selectedFilters={validQueryParams}
                 listingCategories={listingCategories}
                 marketplaceCurrency={marketplaceCurrency}

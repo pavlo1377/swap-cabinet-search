@@ -1,7 +1,9 @@
 @import '../../styles/customMediaQueries.css';
 
 /* "Showing results for ..." line above the suggestions, aligned with the suggestion texts */
-.correctedKeywords {
+.correctedKeywords,
+/* "Recently viewed" heading above the recent items */
+.listHeading {
   composes: marketplaceBodyFontStyles from global;
 
   margin: 0;

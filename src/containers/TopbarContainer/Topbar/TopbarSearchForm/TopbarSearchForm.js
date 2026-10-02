@@ -1,10 +1,14 @@
 import React, { useRef } from 'react';
 import { useDispatch } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import { Form as FinalForm, Field } from 'react-final-form';
 import classNames from 'classnames';
 
+import { useRouteConfiguration } from '../../../../context/routeConfigurationContext';
 import { useIntl } from '../../../../util/reactIntl';
 import { isMainSearchTypeKeywords } from '../../../../util/search';
+import { createResourceLocatorString } from '../../../../util/routes';
+import { getRecentVisits } from '../../../../util/recentVisits';
 
 import { Form, KeywordAutocompleteInput, LocationAutocompleteInput } from '../../../../components';
 
@@ -26,9 +30,19 @@ const KeywordSearchField = props => {
     appConfig,
   } = props;
   const dispatch = useDispatch();
+  const history = useHistory();
+  const routeConfiguration = useRouteConfiguration();
   // Listing titles matching the typed text (like the geocoder does for LocationAutocompleteInput).
   // Typos are corrected if nothing matches the typed text.
   const getKeywordSuggestions = query => dispatch(fetchKeywordSuggestions(query, appConfig));
+
+  // Open the listing page of a recently viewed listing (shown while the input is empty)
+  const onRecentVisitSelect = visit => {
+    const pathParams = { id: visit.id, slug: visit.slug };
+    history.push(createResourceLocatorString('ListingPage', routeConfiguration, pathParams, {}));
+    // blur search input to hide software keyboard
+    inputRef?.current?.blur();
+  };
 
   return (
     <div className={keywordSearchWrapperClasses}>
@@ -53,6 +67,8 @@ const KeywordSearchField = props => {
               input={input}
               getSuggestions={getKeywordSuggestions}
               onSelect={onSuggestionSelect}
+              getRecentItems={getRecentVisits}
+              onRecentSelect={onRecentVisitSelect}
             />
           );
         }}

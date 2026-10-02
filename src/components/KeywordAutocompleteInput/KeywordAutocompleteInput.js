@@ -24,6 +24,7 @@ const KEY_CODE_ESC = 27;
  * The input value is a plain string, so it can be used with Final Form's <Field>.
  * If getSuggestions corrected the spelling of the typed text, the corrected text is shown
  * above the suggestions.
+ * While the input is empty, the recent items (e.g. recently viewed listings) are shown instead.
  *
  * @component
  * @param {Object} props
@@ -39,6 +40,8 @@ const KEY_CODE_ESC = 27;
  * @param {Object?} props.inputRef ref forwarded to the input element
  * @param {Function} props.getSuggestions query => Promise<{ suggestions: Array<{ id: string, title: string }>, correctedKeywords: string|null }>
  * @param {Function} props.onSelect called with the selected suggestion ({ id, title })
+ * @param {Function?} props.getRecentItems () => Array<{ id: string, title: string }>, read when the input gets focus
+ * @param {Function?} props.onRecentSelect called with the selected recent item
  * @returns {JSX.Element} keyword input with suggestions
  */
 const KeywordAutocompleteInput = props => {
@@ -51,8 +54,11 @@ const KeywordAutocompleteInput = props => {
     inputRef,
     getSuggestions,
     onSelect,
+    getRecentItems,
+    onRecentSelect,
   } = props;
   const [suggestions, setSuggestions] = useState([]);
+  const [recentItems, setRecentItems] = useState([]);
   const [correctedKeywords, setCorrectedKeywords] = useState(null);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const [isOpen, setIsOpen] = useState(false);
@@ -64,7 +70,10 @@ const KeywordAutocompleteInput = props => {
   }, []);
 
   const listboxId = `${id}-suggestions`;
-  const showSuggestions = isOpen && suggestions.length > 0;
+  // Nothing typed yet => show the recent items instead of the suggestions
+  const showRecentItems = !input.value?.trim() && recentItems.length > 0;
+  const items = showRecentItems ? recentItems : suggestions;
+  const showSuggestions = isOpen && items.length > 0;
   const predictionsClasses = classNames(
     predictionsClassName || css.predictionsRoot,
     css.predictionsRootMapbox
@@ -116,20 +125,28 @@ const KeywordAutocompleteInput = props => {
     onSelect(suggestion);
   };
 
+  const selectRecentItem = item => {
+    setHighlightedIndex(-1);
+    setIsOpen(false);
+    onRecentSelect(item);
+  };
+
+  const selectItem = item => (showRecentItems ? selectRecentItem(item) : selectSuggestion(item));
+
   const handleKeyDown = e => {
     // Learn the user's keyboard layout, so that text typed in a wrong layout can be fixed
     rememberKeystroke(e);
 
     if (e.keyCode === KEY_CODE_ARROW_DOWN && showSuggestions) {
       e.preventDefault();
-      setHighlightedIndex(i => Math.min(i + 1, suggestions.length - 1));
+      setHighlightedIndex(i => Math.min(i + 1, items.length - 1));
     } else if (e.keyCode === KEY_CODE_ARROW_UP && showSuggestions) {
       e.preventDefault();
       setHighlightedIndex(i => Math.max(i - 1, 0));
     } else if (e.keyCode === KEY_CODE_ENTER && showSuggestions && highlightedIndex >= 0) {
-      // Pick the highlighted suggestion instead of submitting the typed text
+      // Pick the highlighted item instead of submitting the typed text
       e.preventDefault();
-      selectSuggestion(suggestions[highlightedIndex]);
+      selectItem(items[highlightedIndex]);
     } else if (e.keyCode === KEY_CODE_ENTER) {
       // Typed text is submitted by the form
       setIsOpen(false);
@@ -144,6 +161,11 @@ const KeywordAutocompleteInput = props => {
   };
 
   const handleFocus = e => {
+    // Read the recent items on every focus, so that the latest visits are included
+    if (getRecentItems) {
+      setRecentItems(getRecentItems());
+    }
+    setHighlightedIndex(-1);
     setIsOpen(true);
     input.onFocus(e);
   };
@@ -179,7 +201,11 @@ const KeywordAutocompleteInput = props => {
       />
       {showSuggestions ? (
         <div className={predictionsClasses}>
-          {correctedKeywords ? (
+          {showRecentItems ? (
+            <p className={keywordCss.listHeading}>
+              <FormattedMessage id="KeywordAutocompleteInput.recentlyViewed" />
+            </p>
+          ) : correctedKeywords ? (
             <p className={keywordCss.correctedKeywords} aria-live="polite">
               <FormattedMessage
                 id="KeywordAutocompleteInput.showingResultsFor"
@@ -188,20 +214,20 @@ const KeywordAutocompleteInput = props => {
             </p>
           ) : null}
           <ul className={css.predictions} id={listboxId} role="listbox">
-            {suggestions.map((suggestion, index) => (
+            {items.map((item, index) => (
               <li
-                key={suggestion.id}
+                key={item.id}
                 id={`${listboxId}-${index}`}
                 className={classNames(css.listItemWhiteText, {
                   [css.highlighted]: index === highlightedIndex,
                 })}
                 role="option"
                 aria-selected={index === highlightedIndex}
-                // Prevent input blur, so that the click can select the suggestion
+                // Prevent input blur, so that the click can select the item
                 onMouseDown={e => e.preventDefault()}
-                onClick={() => selectSuggestion(suggestion)}
+                onClick={() => selectItem(item)}
               >
-                {suggestion.title}
+                {item.title}
               </li>
             ))}
           </ul>

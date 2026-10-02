@@ -112,7 +112,10 @@ if (cspEnabled) {
 
   // When a CSP directive is violated, the browser posts a JSON body
   // to the defined report URL and we need to parse this body.
+  // Only on the report URL: API routes have their own body parsers (e.g. /api/ai-search allows
+  // bigger bodies for photos), and a global parser with the default 100kb limit would run first.
   app.use(
+    cspReportUrl,
     bodyParser.json({
       type: ['json', 'application/csp-report'],
     })

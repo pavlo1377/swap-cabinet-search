@@ -370,8 +370,9 @@ describe('SearchPage', () => {
       expect(getByText('Fish')).toBeInTheDocument();
       expect(queryByText('Freshwater')).not.toBeInTheDocument();
 
-      // Has Listing type filter
-      expect(getByText('FilterComponent.listingTypeLabel')).toBeInTheDocument();
+      // Has Listing type tabs above the results
+      expect(getByRole('group', { name: 'FilterComponent.listingTypeLabel' })).toBeInTheDocument();
+      expect(getByText('ListingTypeTabs.all')).toBeInTheDocument();
       expect(getByText('Rent bicycles daily')).toBeInTheDocument();
       expect(getByText('Rent bicycles nightly')).toBeInTheDocument();
       expect(getByText('Rent bicycles hourly')).toBeInTheDocument();
@@ -457,12 +458,13 @@ describe('SearchPage', () => {
       expect(queryByText('Cats')).not.toBeInTheDocument();
       expect(queryByText('Fish')).not.toBeInTheDocument();
 
-      // Has Listing type filter
-      expect(getByText('FilterComponent.listingTypeLabel')).toBeInTheDocument();
-      expect(queryByText('Rent bicycles daily')).not.toBeInTheDocument();
-      expect(queryByText('Rent bicycles nightly')).not.toBeInTheDocument();
-      expect(queryByText('Rent bicycles hourly')).not.toBeInTheDocument();
-      expect(queryByText('Sell bicycles')).not.toBeInTheDocument();
+      // Has Listing type tabs above the results (not a popup filter)
+      expect(getByRole('group', { name: 'FilterComponent.listingTypeLabel' })).toBeInTheDocument();
+      expect(getByText('ListingTypeTabs.all')).toBeInTheDocument();
+      expect(getByText('Rent bicycles daily')).toBeInTheDocument();
+      expect(getByText('Rent bicycles nightly')).toBeInTheDocument();
+      expect(getByText('Rent bicycles hourly')).toBeInTheDocument();
+      expect(getByText('Sell bicycles')).toBeInTheDocument();
 
       // Has "more filters" button for secondary filters
       expect(getByText('SearchFiltersPrimary.moreFiltersButton')).toBeInTheDocument();
@@ -577,16 +579,16 @@ describe('SearchPage', () => {
       // Has no Boat filter (primary)
       expect(queryByText('Boat')).not.toBeInTheDocument();
 
-      // Has Listing type filter
-      expect(getByText('FilterComponent.listingTypeLabel')).toBeInTheDocument();
+      // Has Listing type tabs above the results
+      expect(getByRole('group', { name: 'FilterComponent.listingTypeLabel' })).toBeInTheDocument();
       expect(getByText('Rent bicycles daily')).toBeInTheDocument();
       expect(getByText('Rent bicycles nightly')).toBeInTheDocument();
       expect(getByText('Rent bicycles hourly')).toBeInTheDocument();
       expect(getByText('Sell bicycles')).toBeInTheDocument();
     });
 
-    // Test category intercation: click "Sell bicycles"
-    await user.click(getByRole('button', { name: 'Choose Sell bicycles.' }));
+    // Test listing type interaction: click the "Sell bicycles" tab
+    await user.click(getByRole('button', { name: 'Sell bicycles' }));
 
     // Has Boat filter (enum) using SelectMultipleFilter component (it contains also legend for screen readers)
     expect(getAllByText('Boat')).toHaveLength(2);
@@ -609,8 +611,9 @@ describe('SearchPage', () => {
     );
 
     await waitFor(() => {
-      // Does not have Listing type filter
+      // Does not have Listing type filter or tabs
       expect(queryByText('FilterComponent.listingTypeLabel')).not.toBeInTheDocument();
+      expect(queryByText('ListingTypeTabs.all')).not.toBeInTheDocument();
       expect(queryByText('Rent bicycles daily')).not.toBeInTheDocument();
       expect(queryByText('Rent bicycles nightly')).not.toBeInTheDocument();
       expect(queryByText('Rent bicycles hourly')).not.toBeInTheDocument();

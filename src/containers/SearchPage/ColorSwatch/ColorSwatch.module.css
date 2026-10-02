@@ -1,0 +1,16 @@
+.swatch {
+  display: inline-block;
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+
+  /* Thin inner ring, so white and light colors stay visible */
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.15);
+}
+
+.labelWithSwatch {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}

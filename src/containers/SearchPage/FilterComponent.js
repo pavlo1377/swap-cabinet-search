@@ -12,6 +12,7 @@ import KeywordFilter from './KeywordFilter/KeywordFilter';
 import PriceFilter from './PriceFilter/PriceFilter';
 import IntegerRangeFilter from './IntegerRangeFilter/IntegerRangeFilter';
 import SeatsFilter from './SeatsFilter/SeatsFilter';
+import { COLOR_FIELD_KEY, addColorSwatches } from './ColorSwatch/ColorSwatch';
 
 /**
  * FilterComponent is used to map configured filter types
@@ -63,6 +64,8 @@ const FilterComponent = props => {
           options={convertCategoriesToSelectTreeOptions(listingCategories)}
           isNestedEnum={isNestedEnum}
           getAriaLabel={getAriaLabel}
+          // Built-in primary filters are open in the sidebar, other filters are collapsed
+          initiallyOpen
           {...rest}
         />
       );
@@ -81,6 +84,7 @@ const FilterComponent = props => {
           onSubmit={getHandleChangedValueFn(useHistoryPush)}
           options={options}
           getAriaLabel={getAriaLabel}
+          initiallyOpen
           {...rest}
         />
       );
@@ -154,6 +158,23 @@ const FilterComponent = props => {
       const { scope, enumOptions, filterConfig = {} } = config;
       const { label, filterType } = filterConfig;
       const queryParamNames = [constructQueryParamName(key, scope)];
+      // Color is always multi-select (shoppers can pick several colors) and shows a color dot
+      // next to each option. For other fields, the filter type comes from Console.
+      if (key === COLOR_FIELD_KEY) {
+        return (
+          <SelectMultipleFilter
+            label={label}
+            getAriaLabel={getAriaLabel}
+            name={name}
+            queryParamNames={queryParamNames}
+            initialValues={initialValues(queryParamNames, liveEdit)}
+            onSubmit={getHandleChangedValueFn(useHistoryPush)}
+            options={addColorSwatches(enumOptions)}
+            schemaType={schemaType}
+            {...rest}
+          />
+        );
+      }
       return filterType === 'SelectSingleFilter' ? (
         <SelectSingleFilter
           label={label}

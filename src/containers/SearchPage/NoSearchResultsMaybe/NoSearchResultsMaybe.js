@@ -1,6 +1,6 @@
 import React from 'react';
 import { FormattedMessage } from '../../../util/reactIntl';
-import { NamedLink } from '../../../components';
+import { AISearchButton, NamedLink } from '../../../components';
 
 import css from './NoSearchResultsMaybe.module.css';
 
@@ -18,6 +18,9 @@ const NoSearchResultsMaybe = props => {
   return hasNoResult ? (
     <div className={css.noSearchResults}>
       <FormattedMessage id="SearchPage.noResults" />
+      <br />
+      {/* Nothing found with filters: suggest describing it in own words to the AI search */}
+      <AISearchButton className={css.aiSearchButton} />
       <br />
       {hasSearchParams ? (
         <button className={css.resetAllFiltersButton} onClick={e => resetAll(e)}>

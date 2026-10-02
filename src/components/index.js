@@ -77,6 +77,7 @@ export { default as HelpText } from './HelpText/HelpText';
 // First components that include only atomic components //
 //////////////////////////////////////////////////////////
 
+export { default as AISearchButton } from './AISearchButton/AISearchButton';
 export { default as Button, PrimaryButton, PrimaryButtonInline, SecondaryButton, SecondaryButtonInline, InlineTextButton, SocialLoginButton } from './Button/Button';
 export { default as ErrorMessage } from './ErrorMessage/ErrorMessage';
 export { default as ImageFromFile } from './ImageFromFile/ImageFromFile';
@@ -110,6 +111,7 @@ export { default as FieldBoolean } from './FieldBoolean/FieldBoolean';
 export { default as FieldCheckboxGroup } from './FieldCheckboxGroup/FieldCheckboxGroup';
 export { default as FieldPhoneNumberInput } from './FieldPhoneNumberInput/FieldPhoneNumberInput';
 export { default as LocationAutocompleteInput, FieldLocationAutocompleteInput } from './LocationAutocompleteInput/LocationAutocompleteInput';
+export { default as KeywordAutocompleteInput } from './KeywordAutocompleteInput/KeywordAutocompleteInput';
 
 // NOTE: these are code-splitted since these components are heavy and needed only on couple of pages
 export const FieldDateRangePicker = loadable(() => import(/* webpackChunkName: "FieldDateRangePicker" */ './DatePicker/FieldDateRangePicker/FieldDateRangePicker'));

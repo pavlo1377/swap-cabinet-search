@@ -1,11 +1,18 @@
 import React, { useRef } from 'react';
+import { useDispatch } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import { Form as FinalForm, Field } from 'react-final-form';
 import classNames from 'classnames';
 
+import { useRouteConfiguration } from '../../../../context/routeConfigurationContext';
 import { useIntl } from '../../../../util/reactIntl';
 import { isMainSearchTypeKeywords } from '../../../../util/search';
+import { createResourceLocatorString } from '../../../../util/routes';
+import { getRecentVisits } from '../../../../util/recentVisits';
 
-import { Form, LocationAutocompleteInput } from '../../../../components';
+import { Form, KeywordAutocompleteInput, LocationAutocompleteInput } from '../../../../components';
+
+import { autocorrectKeywords, fetchKeywordSuggestions } from '../../TopbarContainer.duck';
 
 import IconSearchDesktop from './IconSearchDesktop';
 import css from './TopbarSearchForm.module.css';
@@ -13,7 +20,30 @@ import css from './TopbarSearchForm.module.css';
 const identity = v => v;
 
 const KeywordSearchField = props => {
-  const { keywordSearchWrapperClasses, iconClass, intl, isMobile = false, inputRef } = props;
+  const {
+    keywordSearchWrapperClasses,
+    iconClass,
+    intl,
+    isMobile = false,
+    inputRef,
+    onSuggestionSelect,
+    appConfig,
+  } = props;
+  const dispatch = useDispatch();
+  const history = useHistory();
+  const routeConfiguration = useRouteConfiguration();
+  // Listing titles matching the typed text (like the geocoder does for LocationAutocompleteInput).
+  // Typos are corrected if nothing matches the typed text.
+  const getKeywordSuggestions = query => dispatch(fetchKeywordSuggestions(query, appConfig));
+
+  // Open the listing page of a recently viewed listing (shown while the input is empty)
+  const onRecentVisitSelect = visit => {
+    const pathParams = { id: visit.id, slug: visit.slug };
+    history.push(createResourceLocatorString('ListingPage', routeConfiguration, pathParams, {}));
+    // blur search input to hide software keyboard
+    inputRef?.current?.blur();
+  };
+
   return (
     <div className={keywordSearchWrapperClasses}>
       <button
@@ -28,17 +58,17 @@ const KeywordSearchField = props => {
         name="keywords"
         render={({ input, meta }) => {
           return (
-            <input
-              className={isMobile ? css.mobileInput : css.desktopInput}
-              {...input}
+            <KeywordAutocompleteInput
               id={isMobile ? 'keyword-search-mobile' : 'keyword-search'}
-              data-testid={isMobile ? 'keyword-search-mobile' : 'keyword-search'}
-              ref={inputRef}
-              type="text"
-              placeholder={intl.formatMessage({
-                id: 'TopbarSearchForm.placeholder',
-              })}
-              autoComplete="off"
+              inputClassName={isMobile ? css.mobileInput : css.desktopInput}
+              predictionsClassName={isMobile ? css.mobilePredictions : css.desktopPredictions}
+              placeholder={intl.formatMessage({ id: 'TopbarSearchForm.placeholder' })}
+              inputRef={inputRef}
+              input={input}
+              getSuggestions={getKeywordSuggestions}
+              onSelect={onSuggestionSelect}
+              getRecentItems={getRecentVisits}
+              onRecentSelect={onRecentVisitSelect}
             />
           );
         }}
@@ -116,6 +146,7 @@ const LocationSearchField = props => {
 const TopbarSearchForm = props => {
   const searchInpuRef = useRef(null);
   const intl = useIntl();
+  const dispatch = useDispatch();
   const { appConfig, onSubmit, ...restOfProps } = props;
 
   const onChange = location => {
@@ -132,10 +163,21 @@ const TopbarSearchForm = props => {
 
   const onKeywordSubmit = values => {
     if (isMainSearchTypeKeywords(appConfig)) {
-      onSubmit({ keywords: values.keywords });
       // blur search input to hide software keyboard
       searchInpuRef?.current?.blur();
+      // Search with the corrected keywords if the typed ones have typos ("sheor" => "shoes")
+      return dispatch(autocorrectKeywords(values.keywords, appConfig)).then(keywords => {
+        onSubmit({ keywords });
+      });
     }
+  };
+
+  // Autosubmit when a listing is picked from the keyword suggestions.
+  // Passing the listing id limits the search results to that single listing.
+  const onKeywordSuggestionSelect = suggestion => {
+    onSubmit({ keywords: suggestion.title, ids: suggestion.id });
+    // blur search input to hide software keyboard
+    searchInpuRef?.current?.blur();
   };
 
   const onLocationSubmit = values => {
@@ -176,6 +218,8 @@ const TopbarSearchForm = props => {
                 intl={intl}
                 isMobile={isMobile}
                 inputRef={searchInpuRef}
+                onSuggestionSelect={onKeywordSuggestionSelect}
+                appConfig={appConfig}
               />
             ) : (
               <LocationSearchField

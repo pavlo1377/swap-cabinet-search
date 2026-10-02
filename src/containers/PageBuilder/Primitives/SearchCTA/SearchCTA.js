@@ -56,7 +56,8 @@ export const SearchCTA = React.forwardRef((props, ref) => {
 
   const { categories, dateRange, keywordSearch, locationSearch } = props.searchFields;
 
-  const [submitDisabled, setSubmitDisabled] = useState(false);
+  // With location search, the button stays disabled until a place is picked from the suggestions
+  const [submitDisabled, setSubmitDisabled] = useState(!!locationSearch);
 
   const categoryConfig = config.categoryConfiguration;
 

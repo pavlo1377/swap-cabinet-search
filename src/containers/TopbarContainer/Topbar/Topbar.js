@@ -11,6 +11,7 @@ import { isMainSearchTypeKeywords, isOriginInUse } from '../../../util/search';
 import { parse, stringify } from '../../../util/urlHelpers';
 import { createResourceLocatorString, matchPathname, pathByRouteName } from '../../../util/routes';
 import {
+  AISearchButton,
   Button,
   IconArrowHead,
   LimitedAccessBanner,
@@ -154,6 +155,7 @@ const TopbarComponent = props => {
     sendVerificationEmailInProgress,
     sendVerificationEmailError,
     showGenericError,
+    showAISearchButton = true,
     config,
     routeConfiguration,
   } = props;
@@ -161,9 +163,16 @@ const TopbarComponent = props => {
   const handleSubmit = values => {
     const { currentSearchParams, history, location, config, routeConfiguration } = props;
 
+    // Set when a listing is picked from the keyword search suggestions
+    const selectedListingId = values?.ids;
+
     const topbarSearchParams = () => {
       if (isMainSearchTypeKeywords(config)) {
-        return { keywords: values?.keywords };
+        // A picked suggestion adds ?ids=<listingId> to the URL. SearchPage passes it on to
+        // sdk.listings.query, which then returns only that listing.
+        // Plain typed text (no suggestion picked) adds nothing, so the search works as before.
+        const selectedListingIdParam = selectedListingId ? { ids: selectedListingId } : {};
+        return { keywords: values?.keywords, ...selectedListingIdParam };
       }
       // topbar search defaults to 'location' search
       const { search, selectedPlace } = values?.location || {};
@@ -176,10 +185,13 @@ const TopbarComponent = props => {
         bounds,
       };
     };
-    const searchParams = {
-      ...currentSearchParams,
-      ...topbarSearchParams(),
-    };
+    // Drop the current filters for a picked listing, so that they can't hide it from the results
+    const searchParams = selectedListingId
+      ? topbarSearchParams()
+      : {
+          ...currentSearchParams,
+          ...topbarSearchParams(),
+        };
 
     const { routeName, pathParams } = getSearchPageResourceLocatorStringParams(
       routeConfiguration,
@@ -337,6 +349,11 @@ const TopbarComponent = props => {
         <FormattedMessage id="Topbar.skipToMainContent" />
         <IconArrowHead direction="right" size="small" rootClassName={css.skiptoMainArrow} />
       </Button>
+      {/* Floating button on every page, except on the AI search page itself */}
+      {/* Hidden on the AI search page itself, and when the page shows its own AI search button */}
+      {showAISearchButton && resolvedCurrentPage !== 'AISearchPage' ? (
+        <AISearchButton isFloating />
+      ) : null}
       <LimitedAccessBanner
         isAuthenticated={isAuthenticated}
         isLoggedInAs={isLoggedInAs}
@@ -460,6 +477,7 @@ const TopbarComponent = props => {
  * @param {Object} props.sendVerificationEmailInProgress
  * @param {Object} props.sendVerificationEmailError
  * @param {boolean} props.showGenericError
+ * @param {boolean?} props.showAISearchButton show the floating "Try AI search" button (default true)
  * @param {Object} props.history
  * @param {Function} props.history.push
  * @param {Object} props.location

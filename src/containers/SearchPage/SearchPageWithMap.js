@@ -26,6 +26,8 @@ import {
 } from './SearchPage.shared';
 
 import FilterComponent from './FilterComponent';
+import ActiveFilterChips from './ActiveFilterChips/ActiveFilterChips';
+import ListingTypeTabs from './ListingTypeTabs/ListingTypeTabs';
 import SearchMap from './SearchMap/SearchMap';
 import MainPanelHeader from './MainPanelHeader/MainPanelHeader';
 import SearchFiltersSecondary from './SearchFiltersSecondary/SearchFiltersSecondary';
@@ -65,6 +67,7 @@ export class SearchPageComponent extends Component {
     this.applyFilters = this.applyFilters.bind(this);
     this.cancelFilters = this.cancelFilters.bind(this);
     this.resetAll = this.resetAll.bind(this);
+    this.closeMap = this.closeMap.bind(this);
     this.getHandleChangedValueFn = this.getHandleChangedValueFn.bind(this);
 
     // SortBy
@@ -171,6 +174,18 @@ export class SearchPageComponent extends Component {
       urlQueryParams: validUrlQueryParamsFromProps(this.props),
       setState: this.setState.bind(this),
     });
+  }
+
+  // Close the map: remove the location (address, bounds, origin) from the URL and keep the filters.
+  // Without a location, the search page shows the grid instead (see routeConfiguration.js).
+  closeMap() {
+    const { history, routeConfiguration, location } = this.props;
+    const { address, bounds, origin, mapSearch, page, ...otherParams } = parse(location.search);
+    const { routeName, pathParams } = getSearchPageResourceLocatorStringParams(
+      routeConfiguration,
+      location
+    );
+    history.push(createResourceLocatorString(routeName, routeConfiguration, pathParams, otherParams));
   }
 
   getHandleChangedValueFn(useHistoryPush) {
@@ -294,6 +309,8 @@ export class SearchPageComponent extends Component {
         />
       ) : null;
     };
+    // Same check as in NoSearchResultsMaybe
+    const hasNoResults = listingsAreLoaded && totalItems === 0;
     const noResultsInfo = (
       <NoSearchResultsMaybe
         listingsAreLoaded={listingsAreLoaded}
@@ -305,6 +322,12 @@ export class SearchPageComponent extends Component {
     );
 
     const { bounds, origin } = searchParamsInURL || {};
+
+    // Listing type is shown as tabs above the results, so it's left out of the filter lists and chips
+    const isListingType = f => f.schemaType === 'listingType';
+    const listingTypeFilter = availableFilters.find(isListingType);
+    const filters = availableFilters.filter(f => !isListingType(f));
+    const primaryFilters = availablePrimaryFilters.filter(f => !isListingType(f));
 
     // Set topbar class based on if a modal is open in
     // a child component
@@ -321,9 +344,23 @@ export class SearchPageComponent extends Component {
         title={title}
         schema={schema}
       >
-        <TopbarContainer rootClassName={topbarClasses} currentSearchParams={validQueryParams} />
+        <TopbarContainer
+          rootClassName={topbarClasses}
+          currentSearchParams={validQueryParams}
+          // With no results, NoSearchResultsMaybe already shows a "Try AI search" button
+          showAISearchButton={!hasNoResults}
+        />
         <div id="main-content" className={css.container} role="main">
           <div className={css.searchResultContainer}>
+            {listingTypeFilter ? (
+              <ListingTypeTabs
+                className={css.listingTypeTabsMapVariant}
+                filterConfig={listingTypeFilter}
+                selectedFilters={validQueryParams}
+                onChange={this.getHandleChangedValueFn(true)}
+                intl={intl}
+              />
+            ) : null}
             <SearchFiltersMobile
               className={css.searchFiltersMobileMap}
               urlQueryParams={validQueryParams}
@@ -343,7 +380,7 @@ export class SearchPageComponent extends Component {
               location={location}
               isMapVariant
             >
-              {availableFilters.map(filterConfig => {
+              {filters.map(filterConfig => {
                 const key = `SearchFiltersMobile.${filterConfig.scope || 'built-in'}.${
                   filterConfig.key
                 }`;
@@ -377,7 +414,7 @@ export class SearchPageComponent extends Component {
               noResultsInfo={noResultsInfo}
             >
               <SearchFiltersPrimary {...propsForSecondaryFiltersToggle}>
-                {availablePrimaryFilters.map(filterConfig => {
+                {primaryFilters.map(filterConfig => {
                   const key = `SearchFiltersPrimary.${filterConfig.scope || 'built-in'}.${
                     filterConfig.key
                   }`;
@@ -400,6 +437,14 @@ export class SearchPageComponent extends Component {
                   );
                 })}
               </SearchFiltersPrimary>
+              <ActiveFilterChips
+                filterConfigs={filters}
+                selectedFilters={validQueryParams}
+                listingCategories={listingCategories}
+                marketplaceCurrency={marketplaceCurrency}
+                onChange={this.getHandleChangedValueFn(true)}
+                intl={intl}
+              />
             </MainPanelHeader>
             {isSecondaryFiltersOpen ? (
               <div className={classNames(css.searchFiltersPanel)}>
@@ -457,6 +502,13 @@ export class SearchPageComponent extends Component {
               </div>
             )}
           </div>
+          {/* When Console sets the map layout, the map is always shown, so there's nothing to close */}
+          {config.layout?.searchPage?.variantType !== 'map' ? (
+            <button type="button" className={css.closeMapButton} onClick={this.closeMap}>
+              <span aria-hidden="true">✕</span>
+              {intl.formatMessage({ id: 'SearchPage.closeMap' })}
+            </button>
+          ) : null}
           <ModalInMobile
             className={css.mapPanel}
             id="SearchPage_map"

@@ -14,6 +14,15 @@
   }
 }
 
+/* Only the spacing, the look comes from <AISearchButton> */
+.aiSearchButton {
+  margin: 12px 0;
+
+  @media (--viewportMedium) {
+    margin: 16px 0;
+  }
+}
+
 .createListingLink,
 .resetAllFiltersButton {
   composes: h5 from global;

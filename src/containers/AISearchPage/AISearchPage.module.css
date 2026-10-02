@@ -1,0 +1,268 @@
+@import '../../styles/customMediaQueries.css';
+
+.root {
+  /* Expand to the available space */
+  flex-grow: 1;
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 36px 24px 72px 24px;
+
+  @media (--viewportMedium) {
+    padding: 64px 48px 96px 48px;
+  }
+}
+
+/* Heading, description and the search form */
+.hero {
+  max-width: 720px;
+  margin: 0 auto 48px auto;
+  text-align: center;
+
+  @media (--viewportMedium) {
+    margin-bottom: 64px;
+  }
+}
+
+.heading {
+  composes: marketplaceModalTitleStyles from global;
+  margin: 0;
+}
+
+.description {
+  color: var(--colorGrey700);
+  margin: 12px 0 0 0;
+
+  @media (--viewportMedium) {
+    margin-top: 16px;
+  }
+}
+
+/* The search box on top, the photo and search buttons in a row below it */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 24px;
+
+  @media (--viewportMedium) {
+    gap: 16px;
+    margin-top: 32px;
+  }
+}
+
+/* Looks like one big text field: the border is here, the attached photo and the text area are inside */
+.searchBox {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 18px;
+  text-align: left;
+  border: 1px solid var(--colorGrey200);
+  /* Same as the search bar on the landing page */
+  border-radius: 8px;
+  background-color: var(--colorWhite);
+  box-shadow: var(--boxShadowLight);
+  transition: border-color var(--transitionStyleButton);
+
+  &:hover,
+  &:focus-within {
+    border-color: var(--marketplaceColor);
+  }
+
+  @media (--viewportMedium) {
+    gap: 16px;
+    padding: 16px 24px;
+  }
+}
+
+/* The text area itself has no own border, the search box has it */
+.textarea {
+  flex-grow: 1;
+  min-width: 0;
+  min-height: 96px;
+  padding: 0;
+  line-height: 24px;
+  border: none;
+  border-radius: 0;
+  background-color: transparent;
+  resize: none;
+
+  &:hover,
+  &:focus {
+    border: none;
+    box-shadow: none;
+    background-color: transparent;
+    outline: none;
+  }
+
+  @media (--viewportMedium) {
+    min-height: 112px;
+    padding: 0;
+    line-height: 24px;
+  }
+}
+
+/* "Add photo" on the left, "Search" on the right */
+.actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+/* Keeps the PrimaryButton border radius, like the search button on the landing page */
+.submit {
+  width: auto;
+  min-width: 120px;
+  min-height: 48px;
+  padding: 0 24px;
+
+  @media (--viewportMedium) {
+    min-width: 160px;
+    min-height: 56px;
+  }
+}
+
+/* "Add photo" button: a label around the hidden file input */
+.photoButton {
+  composes: textSmall from global;
+  font-weight: var(--fontWeightMedium);
+
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  margin: 0;
+  padding: 0 24px;
+
+  /* Outlined in the marketplace color, so it stands apart from the input and the Search button */
+  color: var(--marketplaceColor);
+  background-color: var(--colorWhite);
+  border: 1px solid var(--marketplaceColor);
+  /* Same as PrimaryButton (the Search button) */
+  border-radius: var(--borderRadiusMedium);
+  box-shadow: var(--boxShadowLight);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--transitionStyleButton);
+
+  &:hover,
+  &:focus-within {
+    color: var(--colorWhite);
+    background-color: var(--marketplaceColor);
+  }
+
+  @media (--viewportMedium) {
+    min-height: 56px;
+  }
+}
+
+/* Hidden visually, but still reachable with the keyboard */
+.photoInput {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  overflow: hidden;
+}
+
+/* Attached photo inside the search box, with the remove button on its corner */
+.photoPreview {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.photoImage {
+  display: block;
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: var(--borderRadiusMedium);
+  border: 1px solid var(--colorGrey100);
+
+  @media (--viewportMedium) {
+    width: 80px;
+    height: 80px;
+  }
+}
+
+.removePhoto {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  padding: 0;
+
+  font-size: 16px;
+  line-height: 1;
+  color: var(--colorWhite);
+  background-color: var(--colorGrey700);
+  border: 2px solid var(--colorWhite);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background-color var(--transitionStyleButton);
+
+  &:hover,
+  &:focus {
+    background-color: var(--colorGrey900);
+  }
+}
+
+.message {
+  text-align: center;
+  color: var(--colorGrey700);
+}
+
+.error {
+  text-align: center;
+  color: var(--colorFail);
+}
+
+.resultsCount {
+  composes: textSmall from global;
+  color: var(--colorGrey700);
+  margin: 0 0 18px 0;
+
+  @media (--viewportMedium) {
+    margin-bottom: 24px;
+  }
+}
+
+/* Same grid as the SearchPage grid */
+.listingCards {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 24px;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+
+  @media (min-width: 550px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (--viewportLarge) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @media (min-width: 1440px) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.resultItem {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.listingCard {
+  width: 100%;
+}

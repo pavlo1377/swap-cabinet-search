@@ -1,14 +1,127 @@
 .root {
-  /* SectionContainer defaults */
+  position: relative;
+
+  width: 100%;
+  min-height: 72vh;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
-  width: 100%;
-  position: relative;
 
-  /* Hero specific */
-  min-height: 80vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  overflow: hidden;
+}
+
+/* Cinematic readability layer */
+.root::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(10, 18, 20, 0.16) 0%,
+      rgba(10, 18, 20, 0.24) 45%,
+      rgba(10, 18, 20, 0.42) 100%
+    );
+
+  pointer-events: none;
+}
+
+/* Keeps the existing PageBuilder content above the overlay */
+.root > [class*="backgroundImageWrapper"] {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.root > [class*="sectionContent"] {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+}
+
+/* Give the hero content a stronger visual hierarchy */
+.root header {
+  max-width: 760px;
+  margin: 0 auto;
+
+  text-align: center;
+
+  padding: 48px 28px;
+}
+
+/* Subtle depth without changing functionality */
+.root header > * {
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.22);
+}
+
+/* Make the CTA feel intentional and premium */
+.root header a,
+.root header button {
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    filter 180ms ease;
+}
+
+.root header a:hover,
+.root header button:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.04);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
+}
+
+.root header a:focus-visible,
+.root header button:focus-visible {
+  outline: 3px solid rgba(255, 255, 255, 0.85);
+  outline-offset: 4px;
+}
+
+@media (--viewportMedium) {
+  .root {
+    min-height: 76vh;
+  }
+
+  .root header {
+    padding: 64px 40px;
+  }
+}
+
+@media (--viewportLarge) {
+  .root {
+    min-height: 78vh;
+    background-position: center 48%;
+  }
+
+  .root header {
+    max-width: 820px;
+  }
+}
+
+@media (max-width: 767px) {
+  .root {
+    min-height: 68vh;
+  }
+
+  .root header {
+    padding: 40px 20px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root header a,
+  .root header button {
+    transition: none;
+  }
+
+  .root header a:hover,
+  .root header button:hover {
+    transform: none;
+  }
 }

@@ -1,0 +1,63 @@
+@import '../../../styles/customMediaQueries.css';
+
+.root {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+
+  @media (--viewportMedium) {
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+}
+
+.chip {
+  composes: textSmall from global;
+  font-weight: var(--fontWeightMedium);
+
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  margin: 0;
+  padding: 0 12px;
+
+  color: var(--marketplaceColor);
+  background-color: var(--colorWhite);
+  border: 1px solid var(--marketplaceColor);
+  border-radius: 15px;
+  cursor: pointer;
+  transition: all var(--transitionStyleButton);
+
+  &:hover,
+  &:focus {
+    color: var(--colorWhite);
+    background-color: var(--marketplaceColor);
+  }
+
+  @media (--viewportMedium) {
+    height: 32px;
+    padding: 0 16px;
+    border-radius: 16px;
+  }
+}
+
+.removeIcon {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.clearAll {
+  composes: chip;
+
+  color: var(--colorGrey700);
+  border-color: var(--colorGrey300);
+
+  &:hover,
+  &:focus {
+    color: var(--colorWhite);
+    background-color: var(--colorGrey700);
+    border-color: var(--colorGrey700);
+  }
+}

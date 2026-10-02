@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
 
 import { FormattedMessage } from '../../util/reactIntl';
+import { rememberKeystroke } from '../../util/keyboardLayout';
 
 // Reuse the location autocomplete dropdown styles so both searches look the same
 import css from '../LocationAutocompleteInput/LocationAutocompleteInput.module.css';
@@ -116,6 +117,9 @@ const KeywordAutocompleteInput = props => {
   };
 
   const handleKeyDown = e => {
+    // Learn the user's keyboard layout, so that text typed in a wrong layout can be fixed
+    rememberKeystroke(e);
+
     if (e.keyCode === KEY_CODE_ARROW_DOWN && showSuggestions) {
       e.preventDefault();
       setHighlightedIndex(i => Math.min(i + 1, suggestions.length - 1));

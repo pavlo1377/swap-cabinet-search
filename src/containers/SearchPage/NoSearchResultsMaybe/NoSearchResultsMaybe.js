@@ -19,6 +19,12 @@ const NoSearchResultsMaybe = props => {
     <div className={css.noSearchResults}>
       <FormattedMessage id="SearchPage.noResults" />
       <br />
+      {/* Nothing found with filters: suggest describing it in own words to the AI search */}
+      <NamedLink className={css.aiSearchLink} name="AISearchPage">
+        <span aria-hidden="true">✨</span>
+        <FormattedMessage id="NoSearchResultsMaybe.tryAISearch" />
+      </NamedLink>
+      <br />
       {hasSearchParams ? (
         <button className={css.resetAllFiltersButton} onClick={e => resetAll(e)}>
           <FormattedMessage id={'SearchPage.resetAllFilters'} />

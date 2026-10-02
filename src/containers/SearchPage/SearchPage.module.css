@@ -298,6 +298,41 @@
   height: 100%;
 }
 
+/* "Close map" button on top of the map (desktop). On mobile the map opens in its own modal. */
+.closeMapButton {
+  display: none;
+
+  @media (--viewportMedium) {
+    /* Fixed like the map itself: above the map (z-index 1), below the topbar */
+    position: fixed;
+    top: calc(var(--topbarHeightDesktop) + 16px);
+    right: 16px;
+    z-index: 5;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 40px;
+    padding: 0 16px;
+    margin: 0;
+
+    font-size: 14px;
+    font-weight: var(--fontWeightBold);
+    color: var(--colorGrey700);
+    background-color: var(--colorWhite);
+    border: none;
+    border-radius: 20px;
+    box-shadow: var(--boxShadowPopup);
+    cursor: pointer;
+    transition: color var(--transitionStyleButton);
+
+    &:hover,
+    &:focus {
+      color: var(--colorBlack);
+    }
+  }
+}
+
 .map {
   width: 100vw;
   height: 100vh;

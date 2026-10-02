@@ -6,6 +6,8 @@
  * vocabulary is replaced with the closest vocabulary word, if one is close enough.
  */
 
+import { toQwerty } from './keyboardLayout';
+
 // Words shorter than this are not added to the vocabulary nor corrected
 const MIN_WORD_LENGTH = 3;
 
@@ -61,20 +63,10 @@ export const buildVocabulary = texts =>
     return vocabulary;
   }, new Map());
 
-/**
- * Find the closest vocabulary word for the given word.
- * Ties are resolved in favor of the more common word.
- *
- * @param {string} word lowercase word
- * @param {Map<string, number>} vocabulary
- * @returns {string} the closest vocabulary word, or the word itself if nothing is close enough
- */
-export const closestWord = (word, vocabulary) => {
+// The vocabulary word with the fewest edits from the given word, or null if none is close enough.
+// Ties are resolved in favor of the more common word.
+const findClosestWord = (word, vocabulary) => {
   const maxEdits = maxEditsFor(word);
-  if (maxEdits === 0 || vocabulary.has(word)) {
-    return word;
-  }
-
   let best = null;
   vocabulary.forEach((count, candidate) => {
     // Words with a too different length can't be close enough
@@ -88,7 +80,31 @@ export const closestWord = (word, vocabulary) => {
       best = { word: candidate, distance, count };
     }
   });
-  return best ? best.word : word;
+  return best ? best.word : null;
+};
+
+/**
+ * Find the closest vocabulary word for the given word:
+ * 1. a word that is in the vocabulary is kept as it is
+ * 2. a word typed in another keyboard layout is turned into QWERTY ("ырщуы" => "shoes")
+ * 3. a typo is corrected ("sheor" => "shoes"), also after the layout change ("ырщуыы" => "shoes")
+ *
+ * @param {string} word lowercase word
+ * @param {Map<string, number>} vocabulary
+ * @returns {string} the closest vocabulary word, or the word itself if nothing is close enough
+ */
+export const closestWord = (word, vocabulary) => {
+  if (maxEditsFor(word) === 0 || vocabulary.has(word)) {
+    return word;
+  }
+
+  // The same keys in QWERTY, learned from the user's key presses (see keyboardLayout.js)
+  const qwertyWord = toQwerty(word);
+  if (vocabulary.has(qwertyWord)) {
+    return qwertyWord;
+  }
+
+  return findClosestWord(word, vocabulary) || findClosestWord(qwertyWord, vocabulary) || word;
 };
 
 /**

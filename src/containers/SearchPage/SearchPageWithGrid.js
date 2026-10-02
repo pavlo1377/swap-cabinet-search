@@ -21,6 +21,7 @@ import {
 } from './SearchPage.shared';
 
 import FilterComponent from './FilterComponent';
+import ActiveFilterChips from './ActiveFilterChips/ActiveFilterChips';
 import MainPanelHeader from './MainPanelHeader/MainPanelHeader';
 import SearchFiltersMobile from './SearchFiltersMobile/SearchFiltersMobile';
 import SortBy from './SortBy/SortBy';
@@ -302,7 +303,16 @@ export class SearchPageComponent extends Component {
                 searchInProgress={searchInProgress}
                 searchListingsError={searchListingsError}
                 noResultsInfo={noResultsInfo}
-              />
+              >
+                <ActiveFilterChips
+                  filterConfigs={availableFilters}
+                  selectedFilters={validQueryParams}
+                  listingCategories={listingCategories}
+                  marketplaceCurrency={marketplaceCurrency}
+                  onChange={this.getHandleChangedValueFn(true)}
+                  intl={intl}
+                />
+              </MainPanelHeader>
               <div
                 className={classNames(css.listingsForGridVariant, {
                   [css.newSearchInProgress]: !(listingsAreLoaded || searchListingsError),

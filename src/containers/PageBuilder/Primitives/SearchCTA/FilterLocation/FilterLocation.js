@@ -74,12 +74,9 @@ const FilterLocation = props => {
   } = props;
   const classes = classNames(rootClassName || css.root, className);
 
+  // The search shows results on a map, so it needs a place picked from the suggestions
   const onChange = location => {
-    if (location?.search?.length > 0 && !location?.selectedPlace) {
-      setSubmitDisabled(true);
-    } else {
-      setSubmitDisabled(false);
-    }
+    setSubmitDisabled(!location?.selectedPlace);
   };
 
   return (
